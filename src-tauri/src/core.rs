@@ -14,7 +14,6 @@ const EXPLORER_HTML: &str = include_str!("../../cmp/explorer/1.0.0/index.html");
 const EDITOR_HTML: &str = include_str!("../../cmp/editor/1.0.0/index.html");
 const CHAT_HTML: &str = include_str!("../../cmp/chat/1.0.0/index.html");
 const TERMINAL_HTML: &str = include_str!("../../cmp/terminal/1.0.0/index.html");
-const SETTINGS_HTML: &str = include_str!("../../cmp/settings/1.0.0/index.html");
 const SETTINGS_HTML_101: &str = include_str!("../../cmp/settings/1.0.1/index.html");
 
 const LOG_IDS: &[&str] = &[
