@@ -23,7 +23,8 @@
     "gate:patch": "node scripts/gate-patch.mjs",
     "gate": "pnpm idx:build && pnpm gate:base && pnpm gate:arch && pnpm gate:ctx && pnpm gate:log && pnpm gate:mf && pnpm gate:policy && pnpm gate:bind && pnpm gate:patch && pnpm check && pnpm test",
     "smoke": "node scripts/smoke.mjs",
-    "gate:base": "node scripts/gate-base.mjs"
+    "gate:base": "node scripts/gate-base.mjs",
+    "gate:block": "node scripts/gate-block.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
