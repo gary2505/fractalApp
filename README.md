@@ -2,7 +2,9 @@
 
 Production-first baseline for a small Core-Web-Fractal desktop app.
 
-Version: `0.9.0`
+Version: `1.0.0` — **v1-base** (frozen baseline)
+
+Tag: `v1-base` — verified build, no feature additions. Next step: block-production-checklist.
 
 Stack:
 

@@ -1,8 +1,8 @@
 # Next
 
-Current target: freeze `v0.9` as `v1-base` after local compile/runtime fixes.
+Current target: **v1-base** (frozen, tagged 2026-06-21).
 
-Do next:
+Next step: **block-production-checklist**
 
 ```txt
 pnpm install
@@ -11,28 +11,25 @@ pnpm smoke
 pnpm tauri dev
 ```
 
-Fix only:
+## block-production-checklist
 
-```txt
-compile errors
-runtime boot errors
-gate errors
-manifest/component loading errors
-```
+- [ ] verify all gates pass clean
+- [ ] verify smoke test passes
+- [ ] verify tauri dev boots without errors
+- [ ] verify all 6 components load in shell
+- [ ] verify settings.apply intent round-trip
+- [ ] verify manifest swap (active ↔ candidate)
+- [ ] verify rollback from candidate → verified
+- [ ] audit log IDs present for all core flows
+- [ ] sign components (replace local-dev-signature)
+- [ ] production CSP review
+- [ ] bundle size check
+- [ ] Windows/macOS/Linux smoke
 
-Do not add yet:
-
-```txt
-real explorer
-real editor
-real AI chat
-real terminal process
-PDF/image tools
-remote update server
-```
-
-After `v1-base`, first real UI should start from:
+After checklist passes, first real UI starts from:
 
 ```txt
 pnpm cmp:new explorer-shell
 ```
+
+## Archived (done)

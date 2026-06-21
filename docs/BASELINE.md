@@ -1,6 +1,8 @@
-# fractalApp baseline
+# fractalApp baseline — v1-base (frozen)
 
-This project has passed the base-project stop line and now starts UI Template v1.
+This project has passed the base-project stop line and is now frozen as `v1-base`.
+
+Tag: `v1-base` | Date: 2026-06-21 | Next: block-production-checklist
 
 ## Still not allowed
 
@@ -27,6 +29,13 @@ Do not add remote updater yet.
 - Fractal Patch rules
 - generated AI indexes
 - basic gates
+
+## v1-base frozen baseline includes
+
+- All v0.8 additions (below)
+- Component manifest maxCoreVersion bumped to 1.x
+- Version tags aligned: package.json, Cargo.toml, tauri.conf.json all 1.0.0
+- GitHub remote: https://github.com/gary2505/fractalApp.git
 
 ## v0.8 adds
 
