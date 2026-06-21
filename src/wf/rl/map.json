@@ -1,0 +1,12 @@
+{
+  "workflowId": "rl",
+  "goal": "restore last session path after reload",
+  "files": [
+    "src/wf/rl/load.ts",
+    "src/wf/rl/save.ts",
+    "src/wf/rl/restore.ts",
+    "src/wf/rl/state.ts",
+    "src/wf/rl/test.ts"
+  ],
+  "symbols": ["loadSess", "saveSess", "restorePath", "validatePath"]
+}

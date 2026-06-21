@@ -1,0 +1,21 @@
+{
+  "id": "welcome",
+  "version": "1.0.1",
+  "apiVersion": 1,
+  "minCoreVersion": "0.3.0",
+  "maxCoreVersion": "0.x",
+  "path": "cmp/welcome/1.0.1",
+  "entry": "index.html",
+  "hashAlgo": "sha256",
+  "hash": "computed-on-first-run",
+  "signature": "local-dev-signature",
+  "publicKeyId": "local-dev-key",
+  "createdAt": "2026-06-20T00:00:00Z",
+  "capabilities": [
+    { "name": "log", "commands": ["log.write", "log.readLast"] }
+  ],
+  "healthCheck": {
+    "entry": "index.html",
+    "timeoutMs": 3000
+  }
+}

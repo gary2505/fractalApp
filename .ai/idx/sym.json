@@ -1,0 +1,375 @@
+{
+  "generatedAt": "2026-06-21T04:08:19.391Z",
+  "symbols": [
+    {
+      "file": "src/core/app-data/app-data.ts",
+      "line": 14,
+      "name": "readAppDataStatus"
+    },
+    {
+      "file": "src/core/bind/intent.ts",
+      "line": 13,
+      "name": "makeTraceId"
+    },
+    {
+      "file": "src/core/boot/boot.ts",
+      "line": 11,
+      "name": "coreInfo"
+    },
+    {
+      "file": "src/core/boot/boot.ts",
+      "line": 13,
+      "name": "initCore"
+    },
+    {
+      "file": "src/core/boot/boot.ts",
+      "line": 17,
+      "name": "loadCoreInfo"
+    },
+    {
+      "file": "src/core/bridge/bridge.ts",
+      "line": 31,
+      "name": "bridgeInvoke"
+    },
+    {
+      "file": "src/core/checkpoint/checkpoint.ts",
+      "line": 7,
+      "name": "createCheckpoint"
+    },
+    {
+      "file": "src/core/checkpoint/checkpoint.ts",
+      "line": 11,
+      "name": "isCheckpoint"
+    },
+    {
+      "file": "src/core/cmp/cmp.ts",
+      "line": 9,
+      "name": "readComponent"
+    },
+    {
+      "file": "src/core/cmp/sdk/bridge-client.ts",
+      "line": 8,
+      "name": "createBridgeClient"
+    },
+    {
+      "file": "src/core/cmp/sdk/health.ts",
+      "line": 3,
+      "name": "makeHealth"
+    },
+    {
+      "file": "src/core/cmp/sdk/health.ts",
+      "line": 15,
+      "name": "publishHealth"
+    },
+    {
+      "file": "src/core/cmp/sdk/id.ts",
+      "line": 1,
+      "name": "makeCmpTraceId"
+    },
+    {
+      "file": "src/core/cmp/sdk/id.ts",
+      "line": 7,
+      "name": "makeCmpId"
+    },
+    {
+      "file": "src/core/cmp/sdk/intent-client.ts",
+      "line": 5,
+      "name": "createIntent"
+    },
+    {
+      "file": "src/core/cmp/sdk/intent-client.ts",
+      "line": 13,
+      "name": "sendIntent"
+    },
+    {
+      "file": "src/core/crash/crash.ts",
+      "line": 9,
+      "name": "openCrashScreen"
+    },
+    {
+      "file": "src/core/health/health.ts",
+      "line": 19,
+      "name": "healthCheck"
+    },
+    {
+      "file": "src/core/health/health.ts",
+      "line": 23,
+      "name": "repairAppData"
+    },
+    {
+      "file": "src/core/health/health.ts",
+      "line": 27,
+      "name": "resetManifest"
+    },
+    {
+      "file": "src/core/i18n/i18n.ts",
+      "line": 15,
+      "name": "lang"
+    },
+    {
+      "file": "src/core/i18n/i18n.ts",
+      "line": 17,
+      "name": "t"
+    },
+    {
+      "file": "src/core/i18n/i18n.ts",
+      "line": 21,
+      "name": "supportedLangs"
+    },
+    {
+      "file": "src/core/i18n/locales/en.ts",
+      "line": 1,
+      "name": "en"
+    },
+    {
+      "file": "src/core/i18n/locales/es.ts",
+      "line": 1,
+      "name": "es"
+    },
+    {
+      "file": "src/core/i18n/locales/ja.ts",
+      "line": 1,
+      "name": "ja"
+    },
+    {
+      "file": "src/core/i18n/locales/ru.ts",
+      "line": 1,
+      "name": "ru"
+    },
+    {
+      "file": "src/core/i18n/locales/zh.ts",
+      "line": 1,
+      "name": "zh"
+    },
+    {
+      "file": "src/core/log/log-ids.ts",
+      "line": 1,
+      "name": "LOG_IDS"
+    },
+    {
+      "file": "src/core/log/log.ts",
+      "line": 21,
+      "name": "writeLog"
+    },
+    {
+      "file": "src/core/log/log.ts",
+      "line": 25,
+      "name": "readLastLogs"
+    },
+    {
+      "file": "src/core/mf/manifest.ts",
+      "line": 33,
+      "name": "loadActiveManifest"
+    },
+    {
+      "file": "src/core/patch/patch.ts",
+      "line": 9,
+      "name": "isUnifiedDiff"
+    },
+    {
+      "file": "src/core/patch/patch.ts",
+      "line": 13,
+      "name": "touchedFiles"
+    },
+    {
+      "file": "src/core/perm/perm.ts",
+      "line": 15,
+      "name": "hasPermission"
+    },
+    {
+      "file": "src/core/policy/policy.ts",
+      "line": 36,
+      "name": "checkPolicy"
+    },
+    {
+      "file": "src/core/recovery/recovery.ts",
+      "line": 3,
+      "name": "repairCoreStorage"
+    },
+    {
+      "file": "src/core/recovery/recovery.ts",
+      "line": 7,
+      "name": "resetCoreManifest"
+    },
+    {
+      "file": "src/core/rollback/rollback.ts",
+      "line": 4,
+      "name": "restorePreviousActive"
+    },
+    {
+      "file": "src/core/safe/safe.ts",
+      "line": 9,
+      "name": "openSafeMode"
+    },
+    {
+      "file": "src/core/sess/session.ts",
+      "line": 8,
+      "name": "loadSession"
+    },
+    {
+      "file": "src/core/sess/session.ts",
+      "line": 12,
+      "name": "saveSession"
+    },
+    {
+      "file": "src/core/set/settings.ts",
+      "line": 10,
+      "name": "defaultSettings"
+    },
+    {
+      "file": "src/core/set/settings.ts",
+      "line": 15,
+      "name": "loadSettings"
+    },
+    {
+      "file": "src/core/set/settings.ts",
+      "line": 19,
+      "name": "saveSettings"
+    },
+    {
+      "file": "src/core/state/state.ts",
+      "line": 15,
+      "name": "coreState"
+    },
+    {
+      "file": "src/core/state/state.ts",
+      "line": 17,
+      "name": "setCoreState"
+    },
+    {
+      "file": "src/core/state/state.ts",
+      "line": 21,
+      "name": "canRecover"
+    },
+    {
+      "file": "src/core/theme/theme.ts",
+      "line": 5,
+      "name": "theme"
+    },
+    {
+      "file": "src/core/theme/theme.ts",
+      "line": 7,
+      "name": "applyTheme"
+    },
+    {
+      "file": "src/core/theme/theme.ts",
+      "line": 14,
+      "name": "resolveTheme"
+    },
+    {
+      "file": "src/core/update/update.ts",
+      "line": 10,
+      "name": "prepareLocalCandidate"
+    },
+    {
+      "file": "src/core/update/update.ts",
+      "line": 14,
+      "name": "verifyCandidate"
+    },
+    {
+      "file": "src/core/update/update.ts",
+      "line": 18,
+      "name": "switchVerified"
+    },
+    {
+      "file": "src/shared/err/error.ts",
+      "line": 24,
+      "name": "toError"
+    },
+    {
+      "file": "src/shared/fn/id.ts",
+      "line": 1,
+      "name": "makeId"
+    },
+    {
+      "file": "src/shared/fn/id.ts",
+      "line": 7,
+      "name": "makeTraceId"
+    },
+    {
+      "file": "src/shared/result/result.ts",
+      "line": 7,
+      "name": "ok"
+    },
+    {
+      "file": "src/shared/result/result.ts",
+      "line": 11,
+      "name": "err"
+    },
+    {
+      "file": "src/shared/schema/app-data.ts",
+      "line": 7,
+      "name": "APP_DATA_CONTRACT"
+    },
+    {
+      "file": "src/shared/schema/component.schema.ts",
+      "line": 33,
+      "name": "isComponentManifest"
+    },
+    {
+      "file": "src/shared/schema/component.schema.ts",
+      "line": 48,
+      "name": "isAppManifest"
+    },
+    {
+      "file": "src/shared/schema/intent.schema.ts",
+      "line": 13,
+      "name": "isIntent"
+    },
+    {
+      "file": "src/shared/schema/patch.schema.ts",
+      "line": 11,
+      "name": "isStatePatch"
+    },
+    {
+      "file": "src/wf/rl/bind.ts",
+      "line": 10,
+      "name": "savePathIntent"
+    },
+    {
+      "file": "src/wf/rl/bind.ts",
+      "line": 28,
+      "name": "restorePathIntent"
+    },
+    {
+      "file": "src/wf/rl/load.ts",
+      "line": 3,
+      "name": "loadSess"
+    },
+    {
+      "file": "src/wf/rl/restore.ts",
+      "line": 3,
+      "name": "validatePath"
+    },
+    {
+      "file": "src/wf/rl/restore.ts",
+      "line": 9,
+      "name": "restorePath"
+    },
+    {
+      "file": "src/wf/rl/save.ts",
+      "line": 3,
+      "name": "saveSess"
+    },
+    {
+      "file": "src/wf/rl/test.ts",
+      "line": 3,
+      "name": "testValidatePath"
+    },
+    {
+      "file": "src/wf/settings/bind.ts",
+      "line": 5,
+      "name": "makeSettingsIntent"
+    },
+    {
+      "file": "src/wf/settings/bind.ts",
+      "line": 20,
+      "name": "makeSettingsPatch"
+    },
+    {
+      "file": "src/wf/settings/state.ts",
+      "line": 9,
+      "name": "settingsIntent"
+    }
+  ]
+}

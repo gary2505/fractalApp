@@ -1,0 +1,20 @@
+{
+  "workflows": [
+    {
+      "id": "rl",
+      "path": "src/wf/rl"
+    },
+    {
+      "id": "settings",
+      "path": "src/wf/settings"
+    },
+    {
+      "id": "patch",
+      "path": "src/core/patch"
+    },
+    {
+      "id": "cmp-template",
+      "path": "cmp/_template/1.0.0"
+    }
+  ]
+}

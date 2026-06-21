@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome 1.0.1</title>
+    <style>
+      :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; background: transparent; color: inherit; }
+      main { padding: 32px; }
+      .card { border: 1px solid rgba(127,127,127,.25); border-radius: 18px; padding: 24px; }
+      h1 { margin: 0 0 12px; font-size: 28px; }
+      p { margin: 0; opacity: .78; line-height: 1.55; }
+      code { background: rgba(127,127,127,.15); border-radius: 8px; padding: 2px 6px; }
+      .tag { display: inline-block; margin-top: 16px; padding: 6px 10px; border-radius: 999px; background: rgba(127,127,127,.14); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Welcome component v1.0.1</h1>
+        <p>This candidate was verified, switched to active, and loaded without updating the binary.</p>
+        <p>The component still runs inside a sandbox iframe and reports health by <code>postMessage</code>.</p>
+        <span class="tag">local update proof</span>
+      </section>
+    </main>
+    <script>
+      window.parent.postMessage({
+        source: 'fractal.component',
+        type: 'health.ready',
+        componentId: 'welcome',
+        version: '1.0.1',
+        ok: true
+      }, '*');
+    </script>
+  </body>
+</html>

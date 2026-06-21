@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "components": {
+    "welcome": {
+      "id": "welcome",
+      "version": "1.0.1",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/welcome/1.0.1",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "c2f02ab58ff27b77c7f87226c28a32fac9ff9ea53c96661c1f487934e11c122c",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    },
+    "explorer": {
+      "id": "explorer",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/explorer/1.0.0",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "84e6e43ebd9bf335b2c010b7c8f54ab8c44335c24b4cb09da2ff51cd8742c6f6",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    },
+    "editor": {
+      "id": "editor",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/editor/1.0.0",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "3ac1c5af6cd06b8584ec1b6939c6aba4f5773d558313db0aa12ffd0b00c25617",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    },
+    "chat": {
+      "id": "chat",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/chat/1.0.0",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "49c1ced29e2f4dff2bc10fc1631449bb552ecd42905c8da92272cf769f610845",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    },
+    "terminal": {
+      "id": "terminal",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/terminal/1.0.0",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "ff12c577ccefdb82ab78a33e7aa05d6a41c3f88ecf6963b747beac96589652f9",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    },
+    "settings": {
+      "id": "settings",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minCoreVersion": "0.5.0",
+      "maxCoreVersion": "0.x",
+      "path": "cmp/settings/1.0.0",
+      "entry": "index.html",
+      "hashAlgo": "sha256",
+      "hash": "b50eda1eed2649077b4a88f0d664f682eaafbc60f1d7457e947302d8febf11f7",
+      "signature": "local-dev-signature",
+      "publicKeyId": "local-dev-key",
+      "createdAt": "2026-06-20T00:00:00Z",
+      "capabilities": [
+        {
+          "name": "settings",
+          "commands": [
+            "set.load",
+            "set.save"
+          ]
+        },
+        {
+          "name": "log",
+          "commands": [
+            "log.write",
+            "log.readLast"
+          ]
+        }
+      ],
+      "healthCheck": {
+        "entry": "index.html",
+        "timeoutMs": 3000
+      }
+    }
+  }
+}

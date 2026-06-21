@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>fractalApp Settings Template</title>
+  <style>
+    :root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; background: #0f172a; color: #e5e7eb; }
+    main { box-sizing: border-box; min-height: 100vh; padding: 28px; }
+    .card { max-width: 760px; margin: 0 auto; border: 1px solid rgba(148,163,184,.35); border-radius: 18px; padding: 24px; background: rgba(15,23,42,.92); }
+    .tag { display: inline-flex; border-radius: 999px; padding: 4px 10px; background: rgba(34,197,94,.16); color: #86efac; font-size: 12px; }
+    h1 { margin: 14px 0 8px; font-size: 28px; }
+    p { margin: 0 0 18px; color: #cbd5e1; line-height: 1.6; }
+    label { display: block; margin: 14px 0 6px; color: #cbd5e1; font-size: 13px; }
+    select, button { width: 100%; border: 1px solid rgba(148,163,184,.45); border-radius: 12px; padding: 10px 12px; background: #111827; color: #f8fafc; }
+    button { margin-top: 18px; cursor: pointer; background: #2563eb; border-color: #3b82f6; font-weight: 650; }
+    button:disabled { cursor: wait; opacity: .7; }
+    code, .status { color: #93c5fd; }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <span class="tag">component settings v1.0.1</span>
+      <h1 id="title">Settings Template</h1>
+      <p id="desc">This component changes settings through CoreBridge and Fractal Binding.</p>
+      <div class="grid">
+        <div><label id="themeLabel" for="theme">Theme</label><select id="theme"></select></div>
+        <div><label id="langLabel" for="lang">Language</label><select id="lang"></select></div>
+      </div>
+      <button id="save">Save through Intent</button>
+      <p class="status" id="status">Loading settings...</p>
+    </section>
+  </main>
+  <script>
+    const dict = {
+      en: ['Settings Template','This component changes settings through CoreBridge and Fractal Binding.','Theme','Language','Save through Intent','Saved'],
+      es: ['Plantilla de ajustes','Este componente cambia ajustes mediante CoreBridge y Fractal Binding.','Tema','Idioma','Guardar con Intent','Guardado'],
+      zh: ['设置模板','此组件通过 CoreBridge 和 Fractal Binding 更改设置。','主题','语言','通过 Intent 保存','已保存'],
+      ru: ['Шаблон настроек','Компонент меняет настройки через CoreBridge и Fractal Binding.','Тема','Язык','Сохранить через Intent','Сохранено'],
+      ja: ['設定テンプレート','このコンポーネントは CoreBridge と Fractal Binding で設定を変更します。','テーマ','言語','Intent で保存','保存しました']
+    };
+    const labels = { light: 'Light', dark: 'Dark', system: 'System' };
+    const langs = { en: 'English', es: 'Español', zh: '中文', ru: 'Русский', ja: '日本語' };
+    const themeEl = document.getElementById('theme');
+    const langEl = document.getElementById('lang');
+    const statusEl = document.getElementById('status');
+    const saveEl = document.getElementById('save');
+    let seq = 0;
+    const waiting = new Map();
+    function opt(value, text) { const o = document.createElement('option'); o.value = value; o.textContent = text; return o; }
+    Object.entries(labels).forEach(([k,v]) => themeEl.appendChild(opt(k, v)));
+    Object.entries(langs).forEach(([k,v]) => langEl.appendChild(opt(k, v)));
+    function invoke(command, payload) {
+      const requestId = 'REQ' + (++seq) + Date.now().toString(36);
+      return new Promise((resolve, reject) => {
+        waiting.set(requestId, { resolve, reject });
+        parent.postMessage({ source: 'fractal.component', type: 'bridge.invoke', apiVersion: 1, requestId, componentId: 'settings', command, payload }, '*');
+      });
+    }
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if (data.source !== 'fractal.core' || data.type !== 'bridge.response') return;
+      const wait = waiting.get(data.requestId);
+      if (!wait) return;
+      waiting.delete(data.requestId);
+      data.ok ? wait.resolve(data.data) : wait.reject(new Error(data.error || 'bridge failed'));
+    });
+    function setText() {
+      const d = dict[langEl.value] || dict.en;
+      ['title','desc','themeLabel','langLabel','save'].forEach((id, i) => document.getElementById(id).textContent = d[i]);
+    }
+    async function load() {
+      try {
+        const s = await invoke('settings_load', {});
+        themeEl.value = s.theme || 'system';
+        langEl.value = s.lang || 'en';
+        setText();
+        statusEl.textContent = 'Ready';
+      } catch (err) { statusEl.textContent = err.message; }
+    }
+    async function save() {
+      saveEl.disabled = true;
+      const traceId = 'SET' + Date.now().toString(36);
+      const payload = { theme: themeEl.value, lang: langEl.value };
+      const intent = { id: traceId, type: 'settings.apply', source: 'user', componentId: 'settings', workflowId: 'settings', traceId, payload };
+      try {
+        const result = await invoke('settings_apply_intent', { intent });
+        setText();
+        statusEl.textContent = (dict[langEl.value] || dict.en)[5] + ' -> ' + result.patch.traceId;
+      } catch (err) { statusEl.textContent = err.message; }
+      saveEl.disabled = false;
+    }
+    langEl.addEventListener('change', setText);
+    saveEl.addEventListener('click', save);
+    parent.postMessage({ source: 'fractal.component', type: 'health.ready', ok: true, componentId: 'settings' }, '*');
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "terms": {
+    "rl": "reload workflow",
+    "cmp": "component",
+    "sdk": "component sdk",
+    "mf": "manifest",
+    "bind": "fractal binding",
+    "patch": "unified diff patch"
+  }
+}

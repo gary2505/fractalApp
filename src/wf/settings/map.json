@@ -1,0 +1,11 @@
+{
+  "id": "settings",
+  "goal": "apply theme and language settings through Fractal Binding",
+  "files": [
+    "src/wf/settings/state.ts",
+    "src/wf/settings/bind.ts",
+    "cmp/settings/1.0.1/index.html"
+  ],
+  "intents": ["settings.apply"],
+  "logs": ["bind.intent.recv", "bind.flow.ok", "bind.patch.ok", "bind.audit.ok"]
+}
