@@ -35,7 +35,7 @@ Do not add remote updater yet.
 - All v0.8 additions (below)
 - Component manifest maxCoreVersion bumped to 1.x
 - Version tags aligned: package.json, Cargo.toml, tauri.conf.json all 1.0.0
-- GitHub remote: https://github.com/gary2505/fractalApp.git
+- GitHub remote: <https://github.com/gary2505/fractalApp.git>
 
 ## v0.8 adds
 

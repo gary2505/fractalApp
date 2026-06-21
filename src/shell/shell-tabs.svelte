@@ -1,8 +1,10 @@
+<script context="module" lang="ts">
+  export type ShellTab = 'welcome' | 'explorer' | 'editor' | 'chat' | 'terminal' | 'settings';
+</script>
+
 <script lang="ts">
   import { t } from '../core/i18n/i18n';
   import type { TextKey } from '../core/i18n/i18n';
-
-  export type ShellTab = 'welcome' | 'explorer' | 'editor' | 'chat' | 'terminal' | 'settings';
 
   export let active: ShellTab = 'welcome';
   export let onSelect: (tab: ShellTab) => void = () => {};

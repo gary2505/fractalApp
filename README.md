@@ -143,7 +143,6 @@ Repair    -> recreates missing dirs/files/components without deleting user data
 Reset MF  -> recreates active.json from bundled component seeds and clears candidate/verified
 ```
 
-
 ## v0.7 fix pack
 
 Fixed from first real test:

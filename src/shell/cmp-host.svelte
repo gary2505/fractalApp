@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { bridgeInvoke, type BridgeCommand } from '../core/bridge/bridge';
+  import { bridgeInvoke, type BridgeCommand, type BridgeMeta } from '../core/bridge/bridge';
   import { readComponent } from '../core/cmp/cmp';
   import type { AppSettings } from '../core/set/settings';
   import { writeLog } from '../core/log/log';
@@ -49,10 +49,10 @@
     const requestId = data.requestId ?? '';
     try {
       if (!data.command) throw new Error('missing bridge command');
-      const result = await bridgeInvoke<SettingsResult>(data.command, data.payload ?? {}, {
-        componentId,
-        traceId: getTraceId(data.payload)
-      });
+      const meta: BridgeMeta = { componentId };
+      const tid = getTraceId(data.payload);
+      if (tid) meta.traceId = tid;
+      const result = await bridgeInvoke<SettingsResult>(data.command, data.payload ?? {}, meta);
       if (data.command === 'settings_apply_intent' && result.settings) {
         onSettingsChanged(result.settings);
       }

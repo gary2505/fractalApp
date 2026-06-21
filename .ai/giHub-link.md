@@ -1,1 +1,3 @@
-https://github.com/gary2505/fractalApp.git
+# GitHub link
+
+<https://github.com/gary2505/fractalApp.git>
