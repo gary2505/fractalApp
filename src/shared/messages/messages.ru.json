@@ -1,0 +1,11 @@
+{
+  "ui.action.close": "Закрыть",
+  "ui.action.cancel": "Отмена",
+  "ui.action.save": "Сохранить",
+  "ui.state.loading": "Загрузка",
+  "ui.state.empty": "Нет данных",
+  "ui.error.generic": "Что-то пошло не так",
+  "ui.hotkey.conflict": "Конфликт горячей клавиши: {hotkey}",
+  "ui.settings.saved": "Настройки сохранены",
+  "ui.component.unavailable": "Компонент недоступен"
+}

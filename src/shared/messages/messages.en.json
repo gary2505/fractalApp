@@ -1,0 +1,11 @@
+{
+  "ui.action.close": "Close",
+  "ui.action.cancel": "Cancel",
+  "ui.action.save": "Save",
+  "ui.state.loading": "Loading",
+  "ui.state.empty": "Nothing to show",
+  "ui.error.generic": "Something went wrong",
+  "ui.hotkey.conflict": "Hotkey conflict: {hotkey}",
+  "ui.settings.saved": "Settings saved",
+  "ui.component.unavailable": "Component is unavailable"
+}
