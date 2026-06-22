@@ -1,0 +1,22 @@
+{
+  "id": "ai-agent-chat.context-gate",
+  "name": "Context Gate",
+  "version": "0.1.0",
+  "fractalApp": "ai-agent-chat",
+  "type": "workflow-block",
+  "status": "skeleton",
+  "entry": "./index.ts",
+  "purpose": "Selects minimal safe files/context.",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x"
+  },
+  "gates": [
+    "gate:ai-agent-chat"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

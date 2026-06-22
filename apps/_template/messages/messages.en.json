@@ -1,0 +1,6 @@
+{
+  "template.app.ready": "Template app is ready.",
+  "template.app.failed": "Template app failed.",
+  "template.block.ready": "Template block is ready.",
+  "template.block.failed": "Template block failed."
+}

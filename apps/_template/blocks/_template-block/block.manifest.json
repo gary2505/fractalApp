@@ -1,0 +1,25 @@
+{
+  "id": "_template._template-block",
+  "name": "Template Block",
+  "version": "0.1.0",
+  "fractalApp": "_template",
+  "type": "workflow-block",
+  "entry": "./index.ts",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x"
+  },
+  "messages": [
+    "template.block.ready",
+    "template.block.failed"
+  ],
+  "hotkeys": [],
+  "gates": [
+    "gate:_template:_template-block"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

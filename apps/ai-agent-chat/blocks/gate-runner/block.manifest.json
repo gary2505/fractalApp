@@ -1,0 +1,22 @@
+{
+  "id": "ai-agent-chat.gate-runner",
+  "name": "Gate Runner",
+  "version": "0.1.0",
+  "fractalApp": "ai-agent-chat",
+  "type": "service-block",
+  "status": "skeleton",
+  "entry": "./index.ts",
+  "purpose": "Runs targeted gates and summarizes result.",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x"
+  },
+  "gates": [
+    "gate:ai-agent-chat"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

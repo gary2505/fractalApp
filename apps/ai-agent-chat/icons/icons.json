@@ -1,0 +1,11 @@
+{
+  "app": "ai-agent-chat",
+  "icons": {
+    "ai-agent-chat": "bot",
+    "token-budget": "gauge",
+    "context-gate": "shield",
+    "patch-review": "diff",
+    "gate-runner": "check-circle",
+    "error-memory": "brain"
+  }
+}

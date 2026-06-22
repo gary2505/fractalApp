@@ -1,0 +1,6 @@
+{
+  "template.open": {
+    "label": "Open template action",
+    "default": "Ctrl+Alt+T"
+  }
+}

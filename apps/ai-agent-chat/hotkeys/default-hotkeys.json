@@ -1,0 +1,20 @@
+{
+  "app": "ai-agent-chat",
+  "hotkeys": [
+    {
+      "id": "aiAgentChat.openPopup",
+      "default": "Ctrl+Shift+A",
+      "messageKey": "aiAgentChat.title"
+    },
+    {
+      "id": "aiAgentChat.runGate",
+      "default": "Ctrl+Enter",
+      "messageKey": "aiAgentChat.gate.run"
+    },
+    {
+      "id": "aiAgentChat.cancelTask",
+      "default": "Escape",
+      "messageKey": "common.cancel"
+    }
+  ]
+}

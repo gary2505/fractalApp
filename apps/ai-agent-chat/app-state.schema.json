@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Agent Chat App State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "activeBlock",
+    "lastTaskId",
+    "settings"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "activeBlock": {
+      "type": "string"
+    },
+    "lastTaskId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defaultMode": {
+          "type": "string"
+        },
+        "approvalLevel": {
+          "type": "string"
+        },
+        "fastIterationMode": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "ai-agent-chat",
+  "name": "AI Agent Chat",
+  "version": "0.1.0",
+  "type": "fractal-app",
+  "status": "skeleton",
+  "entry": "./app.ts",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x",
+    "versioned-blocks": "1.x",
+    "fractal-app-contract": "1.x"
+  },
+  "blocks": [
+    "ai-agent-chat.chat-popup",
+    "ai-agent-chat.context-gate",
+    "ai-agent-chat.token-budget",
+    "ai-agent-chat.model-router",
+    "ai-agent-chat.parallel-runner",
+    "ai-agent-chat.patch-planner",
+    "ai-agent-chat.patch-review",
+    "ai-agent-chat.gate-runner",
+    "ai-agent-chat.error-memory",
+    "ai-agent-chat.rule-improvement-proposals"
+  ],
+  "gates": [
+    "gate:ai-agent-chat"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

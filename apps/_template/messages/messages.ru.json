@@ -1,0 +1,6 @@
+{
+  "template.app.ready": "Шаблон приложения готов.",
+  "template.app.failed": "Ошибка шаблона приложения.",
+  "template.block.ready": "Шаблон блока готов.",
+  "template.block.failed": "Ошибка шаблона блока."
+}

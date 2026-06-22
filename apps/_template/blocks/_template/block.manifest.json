@@ -1,0 +1,23 @@
+{
+  "id": "template.example-block",
+  "name": "Example Block",
+  "version": "0.1.0",
+  "fractalApp": "template",
+  "type": "workflow-block",
+  "entry": "./index.ts",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x",
+    "message-registry": "1.x",
+    "hotkey-registry": "1.x",
+    "icon-registry": "1.x"
+  },
+  "gates": [
+    "gate:template:example-block"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

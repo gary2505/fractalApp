@@ -1,0 +1,26 @@
+{
+  "block": "block-agent-start",
+  "version": "1.0.0",
+  "date": "2026-06-21",
+  "mode": "new-and-updated-files-only",
+  "touches_src": false,
+  "touches_package_json": false,
+  "purpose": "mandatory agent start flow, repo map, feature plan, and light rule checks",
+  "files": [
+    ".ai/start.md",
+    ".ai/idx/map.md",
+    ".ai/checks/names.mjs",
+    ".ai/checks/paths.mjs",
+    ".ai/skills/_router.md",
+    ".ai/skills/_index.md",
+    ".ai/skills/agent/next-session.md",
+    ".ai/skills/agent/task-flow.md",
+    ".ai/skills/code/naming.md",
+    ".ai/skills/code/paths.md",
+    ".ai/skills/plan/where.md",
+    ".ai/prompts/task-template.md",
+    ".ai/blocks/block-agent-start.md",
+    "plan/README.md",
+    "plan/settings-popup.md"
+  ]
+}

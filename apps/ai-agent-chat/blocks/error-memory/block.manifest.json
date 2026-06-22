@@ -1,0 +1,22 @@
+{
+  "id": "ai-agent-chat.error-memory",
+  "name": "Error Memory",
+  "version": "0.1.0",
+  "fractalApp": "ai-agent-chat",
+  "type": "service-block",
+  "status": "skeleton",
+  "entry": "./index.ts",
+  "purpose": "Stores mistake patterns and prevention rules.",
+  "permissions": [],
+  "dependsOn": {
+    "corebridge": "1.x",
+    "ui-system": "1.x"
+  },
+  "gates": [
+    "gate:ai-agent-chat"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

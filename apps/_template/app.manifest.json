@@ -1,0 +1,28 @@
+{
+  "id": "_template",
+  "name": "Fractal App Template",
+  "version": "0.1.0",
+  "type": "fractal-app",
+  "entry": "./index.ts",
+  "stateFile": "./subproject-state.md",
+  "permissions": [],
+  "blocks": [
+    "./blocks/_template-block/block.manifest.json"
+  ],
+  "messages": {
+    "en": "./messages/messages.en.json",
+    "ru": "./messages/messages.ru.json"
+  },
+  "hotkeys": {
+    "en": "./hotkeys/hotkeys.en.json",
+    "ru": "./hotkeys/hotkeys.ru.json"
+  },
+  "gates": [
+    "gate:_template",
+    "gate:_template:_template-block"
+  ],
+  "rollback": {
+    "enabled": true,
+    "previousVersion": null
+  }
+}

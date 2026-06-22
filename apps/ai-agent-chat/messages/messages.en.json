@@ -1,0 +1,11 @@
+{
+  "aiAgentChat.title": "AI Agent Chat",
+  "aiAgentChat.task.placeholder": "Describe the coding task...",
+  "aiAgentChat.mode.architect": "Architect",
+  "aiAgentChat.mode.patchExecutor": "Patch executor",
+  "aiAgentChat.mode.reviewer": "Reviewer",
+  "aiAgentChat.mode.tester": "Tester",
+  "aiAgentChat.tokenBudget.title": "Token budget",
+  "aiAgentChat.safety.scopeRequired": "Patch scope is required before agent work starts.",
+  "aiAgentChat.gate.failed": "Gate failed. Patch is blocked."
+}
