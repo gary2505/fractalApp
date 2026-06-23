@@ -1,29 +1,30 @@
-# block-agent-start
+# block-agent-router
 
-Purpose: make AI work deterministic before coding.
+Short router for AI coding agents.
 
-This block adds:
+Install by copying files into repo root.
 
-```txt
-.ai/start.md
-.ai/idx/map.md
-.ai/checks/*
-.ai/skills/plan/where.md
-plan/settings-popup.md
-```
-
-Rule:
+Adds:
 
 ```txt
-.ai = stable agent rules
-plan = feature/task plan + tests
-src = product code
+.github/copilot-instructions.md
+.ai/router.md
+.ai/skills/agent/simple.md
+.ai/skills/agent/tracer.md
+.ai/skills/agent/done.md
+.ai/blocks/block-agent-router.md
 ```
 
 Use:
 
 ```txt
-Task: Add Settings Popup v1. Use plan/settings-popup.md.
+Small bug = local search first.
+Big feature = plan first.
+Lost agent = tracer first.
 ```
 
-Install: copy files into repo root. New/changed files only.
+Core rule:
+
+```txt
+Evidence beats instructions.
+```
