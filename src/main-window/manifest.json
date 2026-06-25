@@ -1,0 +1,14 @@
+{
+  "name": "main-window-version-switcher",
+  "version": "v1-2",
+  "mainVersions": ["v1-0", "v1-1", "v1-2"],
+  "internalVersions": ["start-v1-1"],
+  "defaultBehavior": "click-version-opens-and-saves-default",
+  "files": [
+    "src/App.svelte",
+    "src/main-window/versions.ts",
+    "src/main-window/start-v1-1.svelte",
+    "src/main-window/main-v1-2.svelte",
+    "src/main-window/manifest.json"
+  ]
+}
