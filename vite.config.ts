@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
 
 export default defineConfig({
   clearScreen: false,
@@ -10,6 +11,11 @@ export default defineConfig({
     strictPort: true
   },
   plugins: [svelte(), tailwindcss()],
+  resolve: {
+    alias: {
+      $lib: path.resolve('./src/lib')
+    }
+  },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
     target: 'es2022',

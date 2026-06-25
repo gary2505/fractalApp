@@ -1,0 +1,26 @@
+{
+  "id": "version-switcher-popup-etalon-v1",
+  "storage": {
+    "defaultVersionKey": "fractalApp.mainWindow.defaultVersion",
+    "proofKey": "fractal.proof.version-switcher-v1"
+  },
+  "expectedVersions": [
+    { "id": "main-v1-0", "label": "v1-0" },
+    { "id": "main-v1-1", "label": "v1-1" },
+    { "id": "main-v1-2", "label": "v1-2" },
+    { "id": "main-v1-3", "label": "v1-3" }
+  ],
+  "expectedDomIds": [
+    "version-switcher-popup",
+    "version-switcher-list",
+    "popup-window-close"
+  ],
+  "expectedInteractions": {
+    "selectVersion": "click version -> onSelectVersion -> default storage key saved -> popup closed",
+    "closeX": "click X -> onClose -> popup closed",
+    "closeEsc": "press Esc -> Bits UI closes top dialog -> onClose -> popup closed",
+    "outsideClick": "click outside -> Bits UI closes dialog -> onClose -> popup closed",
+    "keyboard": "ArrowUp/ArrowDown/Home/End changes active option; Enter/Space selects active option"
+  },
+  "passCondition": "Expected -> Actual -> Diff has no brokenAt"
+}

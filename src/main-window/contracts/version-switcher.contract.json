@@ -1,0 +1,37 @@
+{
+  "id": "version-switcher-popup-contract-v1",
+  "feature": "version switcher popup",
+  "flow": "open -> navigate -> select or close",
+  "architecture": "App -> Domain -> Feature -> Flow -> Step -> Cell",
+  "designStack": {
+    "look": "Fluent 2 reference only",
+    "theme": "daisyUI semantic CSS variables/classes",
+    "behavior": "Bits UI Dialog for popup, focus, Esc, outside click",
+    "icons": "Streamline-style local SVG components"
+  },
+  "boundary": "src/main-window/start-v1-1.svelte owns switcher UI; parent owns selected version state",
+  "inputs": ["activeVersionId", "versions", "onSelectVersion", "onClose"],
+  "outputs": ["selected MainWindowVersionId", "close event", "proof localStorage result"],
+  "parentCallbacks": ["onSelectVersion", "onClose"],
+  "stateRead": ["activeVersionId", "versions", "fractalApp.mainWindow.defaultVersion"],
+  "stateWrite": ["fractal.proof.version-switcher-v1"],
+  "expectedResult": "child event -> parent callback -> state change -> render result",
+  "requiredBehaviors": [
+    "Esc closes popup",
+    "outside click closes popup",
+    "X closes popup",
+    "ArrowDown moves to next option",
+    "ArrowUp moves to previous option",
+    "Home moves to first option",
+    "End moves to last option",
+    "Enter selects active option",
+    "Space selects active option"
+  ],
+  "forbidden": [
+    "component calls Tauri/Rust directly",
+    "component reads filesystem directly",
+    "new full proof framework",
+    "component bundle loader",
+    "remote update server"
+  ]
+}

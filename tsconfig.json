@@ -9,7 +9,11 @@
     "exactOptionalPropertyTypes": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "types": ["svelte", "vite/client"]
+    "types": ["svelte", "vite/client"],
+    "paths": {
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"]
+    }
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte", "src/**/*.test.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

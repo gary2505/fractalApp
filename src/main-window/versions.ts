@@ -1,8 +1,9 @@
-export type MainWindowVersionId = 'main-v1-0' | 'main-v1-1' | 'main-v1-2';
+export type MainWindowVersionId = 'main-v1-0' | 'main-v1-1' | 'main-v1-2' | 'main-v1-3';
 export type StartWindowVersionId = 'start-v1-0' | 'start-v1-1';
 export type WindowVersionStatus = 'working' | 'candidate' | 'test' | 'broken' | 'archived';
 export type MainVersionId = string;
 export type MainWindowVersion = (typeof mainWindowVersions)[number];
+export type StartWindowVersion = (typeof startWindowVersions)[number];
 export type WindowVersion<TId extends string> = {
   id: TId;
   shortLabel: string;
@@ -16,7 +17,8 @@ export type WindowVersion<TId extends string> = {
 export const MAIN_WINDOW_VERSION: MainWindowVersionId = 'main-v1-0';
 export const START_WINDOW_VERSION: StartWindowVersionId = 'start-v1-1';
 
-const MAIN_DEFAULT_STORAGE_KEY = 'fractalapp.main.default';
+export const MAIN_DEFAULT_STORAGE_KEY = 'fractalApp.mainWindow.defaultVersion';
+const OLD_MAIN_DEFAULT_STORAGE_KEY = 'fractalapp.main.default';
 
 export const mainWindowVersions: WindowVersion<MainWindowVersionId>[] = [
   {
@@ -45,6 +47,36 @@ export const mainWindowVersions: WindowVersion<MainWindowVersionId>[] = [
     created: '2026-06-23',
     order: 30,
     notes: 'Empty test screen for interaction proof.'
+  },
+  {
+    id: 'main-v1-3',
+    shortLabel: 'v1-3',
+    label: 'v1-3',
+    status: 'test',
+    created: '2026-06-24',
+    order: 40,
+    notes: 'Popup template proof slice: Fluent look, daisyUI tokens, native behavior fallback, Streamline X icon.'
+  }
+];
+
+export const startWindowVersions: WindowVersion<StartWindowVersionId>[] = [
+  {
+    id: 'start-v1-0',
+    shortLabel: 'start v1-0',
+    label: 'start-v1-0',
+    status: 'archived',
+    created: '2026-06-23',
+    order: 10,
+    notes: 'Original start window.'
+  },
+  {
+    id: 'start-v1-1',
+    shortLabel: 'start v1-1',
+    label: 'start-v1-1',
+    status: 'working',
+    created: '2026-06-23',
+    order: 20,
+    notes: 'Current start window.'
   }
 ];
 
@@ -56,12 +88,44 @@ export function isMainWindowVersionId(value: string | null): value is MainWindow
 
 export function getDefaultMainWindowVersionId(): MainWindowVersionId {
   const stored = readStorage(MAIN_DEFAULT_STORAGE_KEY);
-  return isMainWindowVersionId(stored) ? stored : MAIN_WINDOW_VERSION;
+  if (isMainWindowVersionId(stored)) return stored;
+
+  const oldStored = readStorage(OLD_MAIN_DEFAULT_STORAGE_KEY);
+  if (isMainWindowVersionId(oldStored)) {
+    setDefaultMainWindowVersionId(oldStored);
+    return oldStored;
+  }
+
+  return MAIN_WINDOW_VERSION;
 }
 
 export function setDefaultMainWindowVersionId(id: MainWindowVersionId): MainWindowVersionId {
   writeStorage(MAIN_DEFAULT_STORAGE_KEY, id);
   return id;
+}
+
+export function getLatestMainWindowVersion(): MainWindowVersion {
+  return getSortedMainWindowVersions()[0] ?? mainWindowVersions[0];
+}
+
+export function getNextMainWindowVersion(id: MainWindowVersionId = getDefaultMainWindowVersionId()): MainWindowVersion {
+  const sorted = getSortedMainWindowVersions();
+  const index = sorted.findIndex((version) => version.id === id);
+  return sorted[Math.max(0, Math.min(index + 1, sorted.length - 1))] ?? sorted[0] ?? mainWindowVersions[0];
+}
+
+export function getPreviousMainWindowVersion(id: MainWindowVersionId = getDefaultMainWindowVersionId()): MainWindowVersion {
+  const sorted = getSortedMainWindowVersions();
+  const index = sorted.findIndex((version) => version.id === id);
+  return sorted[Math.max(0, index - 1)] ?? sorted[0] ?? mainWindowVersions[0];
+}
+
+export function getStartWindowVersion(id: StartWindowVersionId = START_WINDOW_VERSION): StartWindowVersion {
+  return startWindowVersions.find((version) => version.id === id) ?? startWindowVersions[0];
+}
+
+function getSortedMainWindowVersions(): MainWindowVersion[] {
+  return [...mainWindowVersions].sort((a, b) => b.order - a.order);
 }
 
 function readStorage(key: string): string | null {
