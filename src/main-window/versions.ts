@@ -3,7 +3,6 @@ export type StartWindowVersionId = 'start-v1-0' | 'start-v1-1';
 export type WindowVersionStatus = 'working' | 'candidate' | 'test' | 'broken' | 'archived';
 export type MainVersionId = string;
 export type MainWindowVersion = (typeof mainWindowVersions)[number];
-
 export type WindowVersion<TId extends string> = {
   id: TId;
   shortLabel: string;
