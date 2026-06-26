@@ -1,0 +1,28 @@
+{
+  "feature": "version-switcher-popup",
+  "flow": "open-navigate-select-close",
+  "status": "passed",
+  "expectedReasons": [
+    "keyboard-arrow-down",
+    "keyboard-arrow-up",
+    "keyboard-home",
+    "keyboard-end",
+    "select-version",
+    "popup-close"
+  ],
+  "defaultStorageKey": "fractalApp.mainWindow.defaultVersion",
+  "requiredVersionIds": [
+    "main-v1-0",
+    "main-v1-1",
+    "main-v1-2",
+    "main-v1-3"
+  ],
+  "requiredBehaviors": [
+    "v1-1 click works",
+    "popup closes after select",
+    "X close works",
+    "Esc close works",
+    "outside click close works",
+    "ArrowUp/Down moves one row at a time"
+  ]
+}

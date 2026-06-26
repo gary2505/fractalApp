@@ -1,0 +1,33 @@
+{
+  "id": "src/lib/ui/tpl/popup.svelte",
+  "stage": "V1-10",
+  "kind": "shared-ui-template-contract",
+  "boundary": "Reusable popup template owned by fractalApp UI template layer.",
+  "inputs": {
+    "open": "bindable boolean",
+    "title": "visible Dialog.Title text",
+    "description": "Dialog.Description text, rendered sr-only when present",
+    "onClose": "parent callback after Bits Dialog closes"
+  },
+  "outputs": {
+    "render": "modal popup with header, body, close icon, and optional theme-default backgrounds",
+    "close": "X, Esc, and outside click close through Bits Dialog open state",
+    "focus": "initial focus prefers data-popup-initial-focus, then selected option, then first option, then first focusable",
+    "drag": "header drag changes popup position and clamps to viewport"
+  },
+  "rules": [
+    "Bits UI Dialog owns dialog behavior and close state.",
+    "Dialog.Close owns X close.",
+    "Dialog.Description must render when description exists; sr-only is OK.",
+    "Close id must be unique: {id}-close.",
+    "Focus must start on active row before X when data-popup-initial-focus is present.",
+    "Header and body background props are optional; omitted props use theme defaults."
+  ],
+  "proof": {
+    "load": "Component imports Dialog from bits-ui, IconBtn from ./icon-btn.svelte, XIcon from ../icons/x.svelte.",
+    "render": "Popup renders Dialog.Root, Portal, Overlay, Content, Title, Description, Close, and children.",
+    "interaction": "X/Esc/outside close updates open=false through Bits Dialog; onClose informs parent.",
+    "parentCallback": "Consumer receives onClose and unmounts/hides popup.",
+    "notCheckedHere": "pnpm check and runtime UI proof must be run in local repo."
+  }
+}

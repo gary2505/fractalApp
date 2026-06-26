@@ -1,9 +1,9 @@
-# PROJECT-STAGE-V1-09
+# PROJECT-STAGE-V1-11
 
-Project: `fractalApp`
-Date: `2026-06-24`
-Stage: `V1-09`
-Purpose: preserve canon with LOCK blocks and add Component Bundle Contract.
+Project: `fractalApp`  
+Date: `2026-06-25`  
+Stage: `V1-11`  
+Purpose: freeze shared popup template cleanup after local test pass.
 
 ---
 
@@ -128,15 +128,15 @@ New UI components update as compiled web bundles, not as .svelte files.
 Bundle example:
 
 AppData/fractalApp/components/main-v1-7/
-manifest.json
-index.html
-assets/main.js
-assets/main.css
-i18n/en.json
-i18n/ru.json
-hotkeys.json
-contract.json
-proof.json
+  manifest.json
+  index.html
+  assets/main.js
+  assets/main.css
+  i18n/en.json
+  i18n/ru.json
+  hotkeys.json
+  contract.json
+  proof.json
 
 Core owns:
 theme setting
@@ -187,165 +187,193 @@ END LOCK
 
 ---
 
-## Current real issue
-
-Version Switcher shows:
-
-```txt
-v1-0
-v1-1
-v1-2
-```
-
-Broken behavior:
-
-```txt
-click v1-1 does nothing
-after click v1-1, X close does not work
-popup stays open
-```
-
-This remains the current proof case.
+LOCK
+text that must not change
+END LOCK
 
 ---
 
-## Current target
+## Freeze result
 
 ```txt
-Version Switcher Proof Slice v1
+Shared Popup Template Cleanup v1 passed.
 ```
 
-Goal:
+User-confirmed status:
 
 ```txt
-find brokenAt
-patch only brokenAt
-prove interaction contract
+all tests passed
+```
+
+Frozen scope:
+
+```txt
+shared popup template normalized
+shared short UI paths confirmed
+contracts co-located beside boundary blocks
+version switcher popup proof preserved
+```
+
+---
+
+## Frozen shared UI paths
+
+```txt
+src/lib/ui/tpl/popup.svelte
+src/lib/ui/tpl/icon-btn.svelte
+src/lib/ui/icons/x.svelte
+```
+
+Contract locations:
+
+```txt
+src/lib/ui/tpl/popup.contract.json
+src/main-window/start-v1-1.contract.json
+src/main-window/start-v1-1.etalon.json
+```
+
+Rule preserved:
+
+```txt
+shared template -> src/lib/ui/tpl
+shared icon -> src/lib/ui/icons
+contract lives beside block it proves
+```
+
+---
+
+## Verified behavior
+
+```txt
+Version switcher opens
+X close works
+Esc close works
+outside click close works
+select version closes popup
+focus starts on active row, not X
+Bits Dialog close state remains source of truth
+```
+
+---
+
+## Checked
+
+```txt
+pnpm check passed
+popup runtime test passed
+version switcher interaction proof passed
+```
+
+Note:
+
+```txt
+This freeze records user-confirmed local test results.
+```
+
+---
+
+## Changed
+
+```txt
+popup template cleanup completed
+short shared path usage completed
+old proof-slice popup path replaced by shared UI path
+popup contract co-located with popup template
+version switcher contract/etalon co-located with start-v1-1
+```
+
+---
+
+## Proof
+
+Expected:
+
+```txt
+child event -> parent callback -> state change -> render result
+```
+
+Actual:
+
+```txt
+select version closes popup
+X closes popup
+Esc closes popup
+outside click closes popup
+active row focus remains correct
+```
+
+Result:
+
+```txt
+Expected = Actual
+```
+
+---
+
+## Not checked
+
+```txt
+remote bundle loader
+remote update server
+full proof framework
+large .fractal system
+new main layout shell
+```
+
+Reason:
+
+```txt
+out of scope for V1-11 freeze
+```
+
+---
+
+## Completed artifacts / patch source
+
+```txt
+fractalapp-popup-cleanup-patch.zip
+PATCH-APPLY.md
+PATCH-REPORT.md
+```
+
+---
+
+## Current repo
+
+```txt
+https://github.com/gary2505/fractalApp.git
+```
+
+---
+
+## Current target for next session
+
+```txt
+Choose next small proof block after popup template freeze.
+```
+
+Recommended next block:
+
+```txt
+main window layout template proof
+```
+
+Do first:
+
+```txt
+write target contract
+create smallest visible layout proof
+verify one child -> parent -> state -> render path
+stop after proof
 ```
 
 Do not build yet:
 
 ```txt
-full proof framework
-component bundle loader
-remote update server
-pattern compiler
-large .fractal system
-new switcher UI
-```
-
----
-
-## Current interaction contract
-
-```txt
-1. Ctrl+Alt+Backspace opens switcher.
-2. Switcher shows only main versions.
-3. UI labels are v1-0, v1-1, v1-2.
-4. Click v1-0 opens main-v1-0 and makes it default.
-5. Click v1-1 opens main-v1-1 and makes it default.
-6. Click v1-2 opens main-v1-2 and makes it default.
-7. Click any version closes switcher.
-8. X closes switcher.
-9. Esc closes switcher.
-10. main-v1-2 is empty screen with label v1-2.
-```
-
----
-
-## Patch notes collected
-
-### PATCH-001 — Svelte `$inspect` as dev sensor
-
-```txt
-$inspect = local dev signal
-trace/proof = AI-readable short result
-```
-
----
-
-### PATCH-002 — Fractal block contract rule
-
-```txt
-Interactive block is not done until child -> parent -> state -> render path is proven.
-```
-
----
-
-### PATCH-003 — PROJECT-STAGE lock rule
-
-```txt
-LOCK
-text that must not change
-END LOCK
-```
-
-Rule:
-
-```txt
-Text between LOCK and END LOCK must be copied unchanged into next PROJECT-STAGE.
-```
-
----
-
-### PATCH-004 — Output hard limit
-
-```txt
-5 lines default
-result first
-no long theory
-patch only when asked
-```
-
----
-
-### PATCH-005 — Component Bundle Contract
-
-```txt
-bundle = js + local css + local i18n + hotkeys + contract + proof
-core = theme + language setting + hotkey router + base css + bridge + rollback
-```
-
-Base code change:
-
-```txt
-not needed now
-needed later when building real component bundle loader
-```
-
----
-
-## Last created artifact
-
-```txt
-fractalApp-version-switcher-proof-slice-v1.zip
-```
-
-Status:
-
-```txt
-created
-not checked with pnpm
-waiting for user test/proof result
-```
-
-Expected proof source:
-
-```txt
-localStorage["fractal.proof.version-switcher-v1"]
-```
-
----
-
-## Correct next workflow
-
-```txt
-1. Install/test proof slice.
-2. Click v1-1.
-3. Read short proof result.
-4. Patch only brokenAt.
-5. Re-test click v1-1, X, Esc.
-6. Stop when contract passes.
+full component bundle loader
+remote updater
+AI agent chat
+large panel system
 ```
 
 ---
@@ -354,18 +382,11 @@ localStorage["fractal.proof.version-switcher-v1"]
 
 ```txt
 Continue fractalApp.
-Read PROJECT-STAGE-V1-09.md.
-Follow LOCK blocks exactly.
-Be concise. 5 lines default.
-
-Current target: Version Switcher Proof Slice v1.
-Do not fix blindly.
-Do not redesign.
-Do not build full proof framework.
-Do not build component bundle loader yet.
-Do not run pnpm unless asked.
-
-Use proof result first.
+Use PROJECT-STAGE-V1-11.md.
+Repo: https://github.com/gary2505/fractalApp.git
+Status: shared popup template cleanup is frozen and all tests passed.
+Task: choose and implement the next smallest proof block only.
+Recommended: main window layout template proof.
 Patch only brokenAt.
 Report Changed / Checked / Proof / Not checked.
 ```
@@ -375,8 +396,8 @@ Report Changed / Checked / Proof / Not checked.
 ## Final guardrail
 
 ```txt
-Current bug first.
-Proof slice first.
-Component loader later.
-Framework later.
+Token saving first.
+Short prompt first.
+Small patch first.
+Proof before next feature.
 ```

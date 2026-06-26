@@ -1,0 +1,52 @@
+{
+  "id": "src/main-window/start-v1-1.svelte",
+  "stage": "V1-10",
+  "kind": "feature-boundary-contract",
+  "feature": "version-switcher-popup",
+  "flow": "open-navigate-select-close",
+  "boundary": "Start window version switcher popup using shared popup template.",
+  "inputs": {
+    "activeVersionId": "current selected main window version id",
+    "versions": "available main window versions",
+    "onSelectVersion": "parent callback to apply selected version",
+    "onClose": "parent callback to hide popup"
+  },
+  "outputs": {
+    "rows": "one listbox option per version",
+    "selection": "click, Enter, or Space calls onSelectVersion(version.id)",
+    "close": "select, X, Esc, or outside click calls onClose",
+    "proof": "writes localStorage key fractal.proof.version-switcher-v1"
+  },
+  "rules": [
+    "Use shared popup at $lib/ui/tpl/popup.svelte.",
+    "Use listbox + div role=option; do not put role=option on button.",
+    "Use roving tabindex; one option has tabindex=0.",
+    "ArrowUp and ArrowDown move one row at a time.",
+    "Selecting a version closes popup through parent callback.",
+    "Do not duplicate close callbacks after select."
+  ],
+  "expected": {
+    "open": "popup visible with active version row focused",
+    "ArrowDown": "activeIndex increments by 1 until last row",
+    "ArrowUp": "activeIndex decrements by 1 until first row",
+    "select": "onSelectVersion called once, onClose called once",
+    "xClose": "Dialog.Close closes via Bits Dialog state and onClose parent callback",
+    "escClose": "Esc closes via Bits Dialog state and onClose parent callback",
+    "outsideClose": "outside click closes via Bits Dialog state and onClose parent callback"
+  },
+  "proof": {
+    "localStorageKey": "fractal.proof.version-switcher-v1",
+    "proofFields": [
+      "feature",
+      "flow",
+      "status",
+      "reason",
+      "selectedVersionId",
+      "defaultStorageKey",
+      "expectedVersionIds",
+      "actualActiveIndex",
+      "timestamp"
+    ],
+    "notCheckedHere": "pnpm check and runtime UI proof must be run in local repo."
+  }
+}

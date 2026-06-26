@@ -1,0 +1,25 @@
+{
+  "id": "main-v1-3.etalon",
+  "versionId": "main-v1-3",
+  "expectedLayout": {
+    "rows": ["TopRow", "TopBar", "MainRow", "SBar"],
+    "mainRowPanels": ["P0", "P1", "P2", "P3", "P4"],
+    "nestedPanels": {
+      "P3": ["P3H1", "P3H2"],
+      "P4": ["P4V1", "P4V2"]
+    },
+    "topTabs": [
+      { "label": "Tab 1", "role": "AI Editor" },
+      { "label": "Tab 2", "role": "File Explorer" },
+      { "label": "Tab 3", "role": "Analysis" },
+      { "label": "Tab 4", "role": "Review" }
+    ],
+    "defaultState": {
+      "activeTopTab": "ai-editor",
+      "agentSide": "right",
+      "p1Visible": false,
+      "p4Visible": true,
+      "p4v2Visible": false
+    }
+  }
+}

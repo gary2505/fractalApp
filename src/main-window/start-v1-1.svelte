@@ -23,14 +23,12 @@
 
   function close(reason: string): void {
     writeProof(reason, activeVersionId, 'passed');
-    open = false;
     onClose();
   }
 
   function selectVersion(versionId: MainWindowVersionId): void {
     writeProof('select-version', versionId, 'passed');
     onSelectVersion(versionId);
-    open = false;
     onClose();
   }
 
@@ -76,9 +74,7 @@
 
   function focusActiveOption(): void {
     requestAnimationFrame(() => {
-      const option = document.querySelector<HTMLElement>(
-        `[data-version-option-index="${activeIndex}"]`
-      );
+      const option = document.querySelector<HTMLElement>(`[data-version-option-index="${activeIndex}"]`);
       option?.focus();
     });
   }
@@ -139,7 +135,6 @@
         data-version-id={version.id}
         onfocus={() => (activeIndex = index)}
         onclick={() => selectVersion(version.id)}
-        onkeydown={() => {}}
       >
         <span class="font-medium">{version.shortLabel}</span>
         <span class="text-xs text-base-content/60">{version.status}</span>

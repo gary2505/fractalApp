@@ -1,0 +1,97 @@
+{
+  "id": "main-v1-3.contract",
+  "version": "1.0.0",
+  "stage": "V1-12-layout-proof",
+  "block": "src/main-window/main-v1-3.svelte",
+  "purpose": "Main window layout proof for custom title/header, role tabs, TopBar, P0-P1-P2-P3-P4 panels, P3H1/P3H2, P4V1/P4V2, and SBar.",
+  "boundary": {
+    "owns": [
+      "TopRow custom window header",
+      "TopBar panel toggles",
+      "MainRow panel layout",
+      "P0 side rail",
+      "P1 pinned/disks panel",
+      "P2 workspace/folder tree panel",
+      "P3 editor/preview panel",
+      "P3H1 editor tab panel",
+      "P3H2 bottom terminal/problems panel",
+      "P4 agent panel",
+      "P4V1 agent chat",
+      "P4V2 agent sidebar",
+      "SBar status bar"
+    ],
+    "doesNotOwn": [
+      "real editor engine",
+      "real file IO",
+      "real terminal process",
+      "real RAM/CPU monitor",
+      "agent runtime",
+      "bundle loader"
+    ]
+  },
+  "requiredIds": [
+    "TopRow",
+    "TopBar",
+    "MainRow",
+    "SBar",
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P3H1",
+    "P3H2",
+    "P4V1",
+    "P4V2"
+  ],
+  "inputs": [
+    "top tab click",
+    "P0/P1 visibility toggle click",
+    "P4 collapse toggle click",
+    "Switch Agent side click",
+    "Agent focus click when P4 is left",
+    "P4 Agent sidebar icon click",
+    "P4 close click",
+    "window minimize/maximize/close click"
+  ],
+  "outputs": [
+    "active role tab changes",
+    "P0/P1 visibility changes",
+    "File Explorer role can show P1",
+    "P4 moves left/right",
+    "P4 collapses/expands",
+    "P4V2 opens/closes",
+    "SBar remains visible"
+  ],
+  "proof": [
+    {
+      "step": "render ids",
+      "expected": "DOM has TopRow, TopBar, MainRow, SBar, P0, P2, P3, P4, P3H1, P3H2, P4V1 by default",
+      "actualProbe": "manual DOM/visual check"
+    },
+    {
+      "step": "file explorer role",
+      "expected": "Tab 2 shows P1 pinned/disks panel",
+      "actualProbe": "click Tab 2 and confirm P1 appears"
+    },
+    {
+      "step": "topbar side toggle",
+      "expected": "button cycles Hide P0 -> Hide P0+P1 -> Hide P1 -> Show P0+P1",
+      "actualProbe": "click TopBar left toggle four times"
+    },
+    {
+      "step": "agent side switch",
+      "expected": "Switch Agent side Ctrl+E button moves P4 before/after side panels",
+      "actualProbe": "click switch icon and inspect P4 location"
+    },
+    {
+      "step": "P4 internals",
+      "expected": "P4 has Chat/Chat 2/Chat 3 tabs, P4V1 chat, optional P4V2 sidebar, and X close",
+      "actualProbe": "click P4 Agent sidebar icon and X close"
+    }
+  ],
+  "notProof": [
+    "visible layout alone is not final product proof",
+    "real terminal/editor/agent integrations are placeholders in this slice"
+  ]
+}

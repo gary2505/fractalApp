@@ -2,6 +2,7 @@
   import { tick, type Snippet } from 'svelte';
   import { Dialog } from 'bits-ui';
   import XIcon from '../icons/x.svelte';
+  import IconBtn from './icon-btn.svelte';
 
   type DragState = {
     pointerId: number;
@@ -79,8 +80,8 @@
     const firstFocusable = panelElement.querySelector<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-
     const target = explicitInitialFocus ?? selectedOption ?? firstOption ?? firstFocusable;
+
     target?.focus();
   }
 
@@ -157,7 +158,6 @@
 <Dialog.Root bind:open>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-40 bg-base-300/20" />
-
     <Dialog.Content
       bind:ref={panelElement}
       {id}
@@ -181,14 +181,12 @@
           {title}
         </Dialog.Title>
 
-        <Dialog.Close
-          id={`${id}-close`}
-          class="btn btn-ghost btn-sm btn-square min-h-8 h-8 w-8 rounded-md border border-transparent text-base-content/80 transition-colors hover:border-error/20 hover:bg-error/10 hover:text-error focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          aria-label={closeLabel}
-          title={closeLabel}
-          data-popup-no-drag="true"
-        >
-          <XIcon title={closeLabel} />
+        <Dialog.Close id={`${id}-close`}>
+          {#snippet child({ props })}
+            <IconBtn {...props} label={closeLabel} title={closeLabel} danger data-popup-no-drag="true">
+              <XIcon title={closeLabel} />
+            </IconBtn>
+          {/snippet}
         </Dialog.Close>
       </div>
 
