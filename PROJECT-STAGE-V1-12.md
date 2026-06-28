@@ -3,6 +3,8 @@
 Project: `fractalApp`  
 Date: `2026-06-26`  
 Stage: `V1-12`  
+Repo: <https://github.com/gary2505/fractalApp.git>
+
 Purpose: restore product vision and design canon while advancing to main window layout proof.
 
 ---
@@ -54,8 +56,10 @@ END LOCK
 
 LOCK
 
-DESIGN & UI CANON:
-8px spacing grid. 4px micro-elements.
+DESIGN & UI CANON
+
+8px spacing grid.
+4px micro-elements
 No pure #000 on pure white.
 Thin semi-transparent borders + soft low-opacity shadows.
 Motion: 150–180ms. Hard cap 300ms.
@@ -122,6 +126,7 @@ Shared Popup Template Cleanup v1 passed.
 ```
 
 Status:
+
 - Shared popup template normalized.
 - Shared UI paths frozen.
 - Contracts co-located with boundary blocks.
@@ -142,6 +147,7 @@ Main Window Layout Template Proof
 ```
 
 Goal:
+
 - Contract first.
 - Small visible proof.
 - Verify child -> parent -> state -> render.
