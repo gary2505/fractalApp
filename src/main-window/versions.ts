@@ -1,9 +1,13 @@
-export type MainWindowVersionId = 'main-v1-0' | 'main-v1-1' | 'main-v1-2' | 'main-v1-3';
+export type MainWindowVersionId = 'main-v1-0' | 'main-v1-1' | 'main-v1-3' | 'main-v1-4';
 export type StartWindowVersionId = 'start-v1-0' | 'start-v1-1';
+
 export type WindowVersionStatus = 'working' | 'candidate' | 'test' | 'broken' | 'archived';
+
 export type MainVersionId = string;
+
 export type MainWindowVersion = (typeof mainWindowVersions)[number];
 export type StartWindowVersion = (typeof startWindowVersions)[number];
+
 export type WindowVersion<TId extends string> = {
   id: TId;
   shortLabel: string;
@@ -14,7 +18,7 @@ export type WindowVersion<TId extends string> = {
   notes: string;
 };
 
-export const MAIN_WINDOW_VERSION: MainWindowVersionId = 'main-v1-0';
+export const MAIN_WINDOW_VERSION: MainWindowVersionId = 'main-v1-4';
 export const START_WINDOW_VERSION: StartWindowVersionId = 'start-v1-1';
 
 export const MAIN_DEFAULT_STORAGE_KEY = 'fractalApp.mainWindow.defaultVersion';
@@ -40,22 +44,22 @@ export const mainWindowVersions: WindowVersion<MainWindowVersionId>[] = [
     notes: 'Next main window.'
   },
   {
-    id: 'main-v1-2',
-    shortLabel: 'v1-2',
-    label: 'v1-2',
-    status: 'test',
-    created: '2026-06-23',
-    order: 30,
-    notes: 'Empty test screen for interaction proof.'
-  },
-  {
     id: 'main-v1-3',
     shortLabel: 'v1-3',
     label: 'v1-3',
     status: 'test',
     created: '2026-06-24',
     order: 40,
-    notes: 'Popup template proof slice: Fluent look, daisyUI tokens, native behavior fallback, Streamline X icon.'
+    notes: 'Layout proof with custom header, panels, AI side toggle, and status bar.'
+  },
+  {
+    id: 'main-v1-4',
+    shortLabel: 'v1-4',
+    label: 'v1-4',
+    status: 'test',
+    created: '2026-06-27',
+    order: 50,
+    notes: 'Versioned child layout blocks: TopRow, TopBar, P0-P4, P3H1/P3H2, and SBar.'
   }
 ];
 

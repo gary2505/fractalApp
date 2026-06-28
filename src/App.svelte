@@ -4,6 +4,7 @@
   import MainV10 from './main-window/main-v1-0.svelte';
   import MainV11 from './main-window/main-v1-1.svelte';
   import MainV13 from './main-window/main-v1-3.svelte';
+  import MainV14 from './main-window/main-v1-4.svelte';
   import StartV11 from './main-window/start-v1-1.svelte';
   import {
     getDefaultMainWindowVersionId,
@@ -49,6 +50,8 @@
   <MainV11 />
 {:else if activeVersionId === 'main-v1-3'}
   <MainV13 />
+{:else if activeVersionId === 'main-v1-4'}
+  <MainV14 />
 {/if}
 
 {#if isSwitcherOpen}

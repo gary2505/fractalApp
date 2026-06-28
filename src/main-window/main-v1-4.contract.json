@@ -1,0 +1,114 @@
+{
+  "id": "main-v1-4.contract",
+  "version": "1.0.0",
+  "stage": "V1-12-layout-proof",
+  "block": "src/main-window/main-v1-4.svelte",
+  "purpose": "Main window layout owner composed from small versioned child UI blocks.",
+  "boundary": {
+    "owns": [
+      "TopRow custom window header composition",
+      "TopBar panel toggle composition",
+      "MainRow panel layout",
+      "P0 side rail visibility",
+      "P1 hidden/pinned panel visibility",
+      "P2 files panel visibility",
+      "P3 main/orchestra panel composition",
+      "P3H1 editor panel child",
+      "P3H2 terminal panel child",
+      "P4 AI agent panel location and visibility",
+      "P4V1 agent chat placeholder",
+      "P4V2 agent sidebar placeholder",
+      "SBar status bar child"
+    ],
+    "doesNotOwn": [
+      "real editor engine",
+      "real file IO",
+      "real terminal process",
+      "real RAM/CPU monitor",
+      "real agent runtime",
+      "bundle loader"
+    ]
+  },
+  "requiredIds": [
+    "TopRow",
+    "TopBar",
+    "MainRow",
+    "SBar",
+    "P0",
+    "P2",
+    "P3",
+    "P4",
+    "P3H1",
+    "P4V1"
+  ],
+  "conditionalIds": [
+    "P1",
+    "P3H2",
+    "P4V2"
+  ],
+  "childFiles": [
+    "top-row-v1-0.svelte",
+    "top-bar-v1-0.svelte",
+    "p0-v1-0.svelte",
+    "p1-v1-0.svelte",
+    "p2-v1-0.svelte",
+    "p3-v1-0.svelte",
+    "p3h1-v1-0.svelte",
+    "p3h2-v1-0.svelte",
+    "p4-v1-0.svelte",
+    "sbar-v1-0.svelte"
+  ],
+  "inputs": [
+    "top tab click",
+    "P0 role click",
+    "TopBar left panels toggle click",
+    "TopBar files toggle click",
+    "TopBar terminal toggle click",
+    "Switch Agent side click",
+    "P4 Agent sidebar icon click",
+    "P4 close click",
+    "window minimize/maximize/close click",
+    "Ctrl+E",
+    "Ctrl+B",
+    "Ctrl+J",
+    "Ctrl+Alt+B",
+    "Esc"
+  ],
+  "outputs": [
+    "active role tab changes",
+    "P1 appears on File Explorer role",
+    "P0/P1 visibility cycle changes",
+    "P2 files panel opens/closes",
+    "P3H2 terminal opens/closes",
+    "P4 moves left/right",
+    "P4 opens/closes",
+    "P4V2 opens/closes",
+    "SBar remains visible"
+  ],
+  "proof": [
+    {
+      "step": "render ids",
+      "expected": "DOM has TopRow, TopBar, MainRow, SBar, P0, P2, P3, P4, P3H1, P4V1 by default",
+      "actualProbe": "manual DOM/visual check"
+    },
+    {
+      "step": "file explorer role",
+      "expected": "Tab 2 shows P1 pinned/disks panel",
+      "actualProbe": "click Tab 2 and confirm P1 appears"
+    },
+    {
+      "step": "hotkeys",
+      "expected": "Ctrl+E switches P4 side, Ctrl+B toggles P2, Ctrl+J toggles P3H2, Ctrl+Alt+B toggles P4",
+      "actualProbe": "manual keyboard check"
+    },
+    {
+      "step": "child ownership",
+      "expected": "main-v1-4 owns state; child components emit callbacks only",
+      "actualProbe": "inspect main-v1-4.svelte child props and callbacks"
+    }
+  ],
+  "notProof": [
+    "visible layout alone is not final product proof",
+    "real terminal/editor/agent integrations are placeholders in this slice"
+  ]
+}

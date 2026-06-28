@@ -112,8 +112,33 @@ Here's a precise prompt you can give to an AI agent:
 You can hand this directly to an AI agent (like Abacus AI Agent / DeepAgent) and it will have everything it needs to implement the full feature. Want me to redirect you to Abacus AI Agent to build it now?
 
 ## language
+
 check how implemented  language switcher In V:\fractalApp\src\main-window\main-v1-0.svelte
 We support 5 languages.
 
 copy the logic to src\main-window\main-v1-3.svelte
 Status bar (SBAR)  have language switcher  that must switch languages as in main-window\main-v1-0.svelte
+
+**
+Continue fractalApp prompt.
+
+Repo: `https://github.com/gary2505/fractalApp.git`
+
+Latest stage: PROJECT-STAGE-V1-13.md.
+
+Last patch: window header patch passed/needs test.
+
+Next task:  logging system
+
+No coding until layout audit/plan is approved.
+
+Use short report: Result / Files / Risk / Next.
+
+ Correct action: create `main-v1-4` as isolated optional version.
+  If you could not clone/check the real repo, You should have stopped and said me about.
+
+  **No code or ZIP unless I say `IMPLEMENT`.
+No behavior recreation from memory.
+Only extract from exact working files or stop.**
+
+//No change to routing/default/version files unless you explicitly list them.

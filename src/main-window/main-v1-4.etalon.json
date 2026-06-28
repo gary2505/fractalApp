@@ -1,0 +1,48 @@
+{
+  "id": "main-v1-4.etalon",
+  "versionId": "main-v1-4",
+  "expectedLayout": {
+    "rows": ["TopRow", "TopBar", "MainRow", "SBar"],
+    "mainRowPanels": ["P0", "P1", "P2", "P3", "P4"],
+    "nestedPanels": {
+      "P3": ["P3H1", "P3H2"],
+      "P4": ["P4V1", "P4V2"]
+    },
+    "childFiles": {
+      "TopRow": "top-row-v1-0.svelte",
+      "TopBar": "top-bar-v1-0.svelte",
+      "P0": "p0-v1-0.svelte",
+      "P1": "p1-v1-0.svelte",
+      "P2": "p2-v1-0.svelte",
+      "P3": "p3-v1-0.svelte",
+      "P3H1": "p3h1-v1-0.svelte",
+      "P3H2": "p3h2-v1-0.svelte",
+      "P4": "p4-v1-0.svelte",
+      "SBar": "sbar-v1-0.svelte"
+    },
+    "topTabs": [
+      { "label": "Tab 1", "role": "AI Editor" },
+      { "label": "Tab 2", "role": "File Explorer" },
+      { "label": "Tab 3", "role": "Analysis" },
+      { "label": "Tab 4", "role": "Review" }
+    ],
+    "defaultState": {
+      "activeTopTab": "ai-editor",
+      "agentSide": "right",
+      "p0Visible": true,
+      "p1Visible": false,
+      "p2Visible": true,
+      "p3h2Visible": true,
+      "p4Visible": true,
+      "p4v2Visible": false,
+      "sbarVisible": true
+    },
+    "hotkeys": {
+      "Ctrl+E": "switch agent side",
+      "Ctrl+B": "toggle P2 files panel",
+      "Ctrl+J": "toggle P3H2 terminal panel",
+      "Ctrl+Alt+B": "toggle P4 AI chat panel",
+      "Esc": "close P4V2 sidebar when open"
+    }
+  }
+}
