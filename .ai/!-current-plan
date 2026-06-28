@@ -1,0 +1,119 @@
+# Main
+
+1. id="TopRow" window header with 4 Top tabs +  min/max/close icon.  Every Tab have different panel configuration / role.
+
+Example Tab1 role= AI editor (like cursor). Tab 2 Role: file explorer (like filesUP), tab 3 Role: Analysis and so on.
+On the right side before min/max/close icon  must be  next icons:
+-Switch side (P0+P1+P2+P3+P4 <-> P4+P3+P2+P1+P0 with tooltip: Switch Agent side Ctrl+E).
+if P4 on left then  P4V2 + P4V1
+
+3.Top bar (id="TopBar") with  toggle icon on left with 4 stages:
+Hide side panel/ hide foles panel / show files panel/ show side panel   panels.
+Also Toggle icon on right side collapse/expand P4V2 panel
+
+4.Next row (id="MainRow) with 5 resizable panels:
+set up id = P0/P1/P2/P3/P4 for each panel :P0-P1-P2-P3-P4 vertical panels
+P0 - left side bar  (can be hidden)
+P1 -  pinned and disks (hidden. use only for file explorer)
+P2 - folder tree / workspace list
+P3 - Editor / second folder tree/ Preview
+have  two horizontal panel
+first  - id= P3H1 panel  can have one tab (if one -> hidden) or several tabs (fix number or dynamic for open file in editor, if not enough space that  icon with additional open files that out of screen)
+Second - id = P3H2 panel  can have  several tabs also.
+P4 - Have header with Tabs: Chat | Chat 2 | Chat 3   and right side icons: Agent sidebar , x close icon.
+  Agent chart + Agent side bar have two vertical panels
+id =P4V1 - Agent chat
+id =P4V2 - Agent Side bar (hidden by default)
+
+5.Status bar (id=SBar)  as exist in db1Hub (several space holders, language switcher, theme switcher, Ram and CPU  monitoring ).
+
+***************** pinned ********
+Here's a precise prompt you can give to an AI agent:
+
+---
+
+> **Task:** Implement a **pin/unpin terminal window** UI component with auto hide/show behavior.
+>
+> ---
+>
+> ## 🧩 Component Behavior
+>
+> **Layout:**
+>
+> - The terminal window sits at the **bottom of the screen**.
+> - When **unpinned**, the terminal **slides down and hides** below the viewport, leaving only a **thin placeholder bar** visible at the bottom edge.
+> - The placeholder bar contains a **pin handler** (a thumbtack icon or drag handle) centered or aligned within it.
+>
+> ---
+>
+> **Unpinned State (Auto Hide):**
+>
+> - On unpin, the terminal **animates downward** (CSS `transform: translateY(100%)` or equivalent) until only the placeholder bar peeks out.
+> - The placeholder bar remains **always visible** at the bottom so the user can interact with it.
+> - The terminal is **not destroyed** — it stays mounted in the DOM, just visually hidden below the fold.
+>
+> ---
+>
+> **Auto Show on Hover:**
+>
+> - When the user **hovers over the placeholder bar / pin handler**, the terminal **slides back up** into view (animate `translateY(0)`).
+> - Apply a **short hover delay** (~150–200ms) before triggering the show, to avoid accidental flickers.
+> - The terminal stays visible **as long as the cursor is inside** the terminal panel or the placeholder bar.
+> - When the cursor **leaves** the terminal area, it **slides back down** to hide again after a short delay (~300ms).
+>
+> ---
+>
+> **Pinned State (Locked):**
+>
+> - Clicking the **pin icon** toggles the pinned state.
+> - When **pinned**, the terminal is **fully visible and locked** in place — hover events have no effect.
+> - The main workspace **shrinks** (or adjusts its bottom padding/height) to accommodate the terminal so they don't overlap.
+> - The pin icon visually changes state (e.g., rotated thumbtack, filled icon, or color change).
+> - Clicking the pin icon again **unpins** the terminal and restores auto hide behavior.
+>
+> ---
+>
+> ### ⚙️ Technical Requirements
+>
+> - Use **CSS transitions** for smooth slide up/down animation (`transition: transform 0.25s ease`).
+> - The terminal panel must have `position: fixed` at the bottom, with `z-index` high enough to float above content when unpinned.
+> - The **placeholder bar** must always remain visible (never hidden), acting as the hover target and pin toggle host.
+> - Manage state with a simple two-value toggle: `pinned | unpinned`.
+> - Hover show/hide must use **debounced mouse enter/leave** events to prevent flickering.
+> - When pinned, the layout container must respond by adjusting its **bottom offset** equal to the terminal height.
+>
+> ---
+>
+> ### 🎨 UX Details
+>
+> - Placeholder bar height: `~28–32px`
+> - Terminal default height: `~250–300px`
+> - Slide animation duration: `250ms`, easing: `ease` or `ease-in-out`
+> - Hover delay before show: `150ms`
+> - Hover delay before hide: `300ms`
+> - Pin icon: thumbtack (📌) or a custom SVG, rotates `90deg` when pinned
+> - Placeholder bar should have a subtle background (e.g., `#1e1e1e` or match terminal theme) with a centered drag/pin handle visible to invite interaction.
+>
+> ---
+>
+> ### ✅ Acceptance Criteria
+>
+> - [ ] Terminal hides below viewport on unpin with smooth animation
+> - [ ] Placeholder bar always visible at bottom edge
+> - [ ] Hovering placeholder bar restores terminal with animation
+> - [ ] Mouse leave hides terminal again after delay
+> - [ ] Pin locks terminal open and adjusts layout
+> - [ ] Unpin restores auto hide behavior
+> - [ ] No flicker on fast mouse movements (debounce applied)
+> - [ ] Terminal content (shell/output) is preserved across hide/show cycles
+
+---
+
+You can hand this directly to an AI agent (like Abacus AI Agent / DeepAgent) and it will have everything it needs to implement the full feature. Want me to redirect you to Abacus AI Agent to build it now?
+
+## language
+check how implemented  language switcher In V:\fractalApp\src\main-window\main-v1-0.svelte
+We support 5 languages.
+
+copy the logic to src\main-window\main-v1-3.svelte
+Status bar (SBAR)  have language switcher  that must switch languages as in main-window\main-v1-0.svelte

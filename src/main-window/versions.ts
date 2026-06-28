@@ -105,23 +105,23 @@ export function setDefaultMainWindowVersionId(id: MainWindowVersionId): MainWind
 }
 
 export function getLatestMainWindowVersion(): MainWindowVersion {
-  return getSortedMainWindowVersions()[0] ?? mainWindowVersions[0];
+  return getSortedMainWindowVersions()[0] ?? mainWindowVersions[0]!;
 }
 
 export function getNextMainWindowVersion(id: MainWindowVersionId = getDefaultMainWindowVersionId()): MainWindowVersion {
   const sorted = getSortedMainWindowVersions();
   const index = sorted.findIndex((version) => version.id === id);
-  return sorted[Math.max(0, Math.min(index + 1, sorted.length - 1))] ?? sorted[0] ?? mainWindowVersions[0];
+  return sorted[Math.max(0, Math.min(index + 1, sorted.length - 1))] ?? sorted[0] ?? mainWindowVersions[0]!;
 }
 
 export function getPreviousMainWindowVersion(id: MainWindowVersionId = getDefaultMainWindowVersionId()): MainWindowVersion {
   const sorted = getSortedMainWindowVersions();
   const index = sorted.findIndex((version) => version.id === id);
-  return sorted[Math.max(0, index - 1)] ?? sorted[0] ?? mainWindowVersions[0];
+  return sorted[Math.max(0, index - 1)] ?? sorted[0] ?? mainWindowVersions[0]!;
 }
 
 export function getStartWindowVersion(id: StartWindowVersionId = START_WINDOW_VERSION): StartWindowVersion {
-  return startWindowVersions.find((version) => version.id === id) ?? startWindowVersions[0];
+  return startWindowVersions.find((version) => version.id === id) ?? startWindowVersions[0]!;
 }
 
 function getSortedMainWindowVersions(): MainWindowVersion[] {

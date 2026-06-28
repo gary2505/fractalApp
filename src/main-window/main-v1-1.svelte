@@ -2,7 +2,7 @@
 </script>
 
 <div class="v1-1-screen">
-  <h1>v1-1</h1>
+  <h1 class="text-2xl">v1-1</h1>
 </div>
 
 <style>
@@ -15,7 +15,6 @@
   }
 
   h1 {
-    font-size: 2rem;
     font-weight: 600;
   }
 </style>

@@ -117,6 +117,10 @@ struct AppDataStatus {
 struct Settings {
   theme: String,
   lang: String,
+  #[serde(default, rename = "fontFamily")]
+  font_family: Option<String>,    // e.g. "Atkinson Hyperlegible"
+  #[serde(default, rename = "fontSize")]
+  font_size: Option<u32>,         // px, e.g. 18
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -368,6 +372,8 @@ fn settings_apply_intent(intent: BindingIntent) -> AppResult<SettingsApplyResult
   let settings = Settings {
     theme: json_str(&intent.payload, "theme", &before.theme),
     lang: json_str(&intent.payload, "lang", &before.lang),
+    font_family: json_opt_str(&intent.payload, "fontFamily"),
+    font_size: json_opt_u32(&intent.payload, "fontSize"),
   };
   validate_settings(&settings)?;
   atomic_write_json(&app_data_dir()?.join("set/settings.json"), &settings)?;
@@ -876,6 +882,14 @@ fn json_str(value: &Value, key: &str, fallback: &str) -> String {
   value.get(key).and_then(Value::as_str).unwrap_or(fallback).to_string()
 }
 
+fn json_opt_str(value: &Value, key: &str) -> Option<String> {
+  value.get(key).and_then(Value::as_str).map(|s| s.to_string())
+}
+
+fn json_opt_u32(value: &Value, key: &str) -> Option<u32> {
+  value.get(key).and_then(Value::as_u64).map(|n| n as u32)
+}
+
 fn make_settings_patch(intent: &BindingIntent, before: &Settings, after: &Settings) -> AppResult<StatePatch> {
   let before_json = serde_json::to_value(before)
     .map_err(|e| AppError::storage("PATCH_BEFORE", "cannot hash before settings", e))?;
@@ -906,7 +920,7 @@ fn write_binding_log(id: &str, intent: &BindingIntent, msg: &str) -> AppResult<(
 }
 
 fn default_settings() -> Settings {
-  Settings { theme: "system".into(), lang: "en".into() }
+  Settings { theme: "system".into(), lang: "en".into(), font_family: None, font_size: None }
 }
 
 fn default_session() -> Session {
