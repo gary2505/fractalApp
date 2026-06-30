@@ -127,7 +127,7 @@ export function createKeyController(bindings: Keybinding[] = [], options: KeyCon
       currentAbort = null;
 
       if (pending) {
-        const next = pending;
+        const next = pending as { kind: 'press' | 'repeat'; binding: Keybinding; info: KeyInfo; event: KeyboardEvent };
         pending = null;
         setTimeout(() => void run(next.kind, next.binding, next.info, next.event), 0);
       }

@@ -1,10 +1,12 @@
-<script lang="ts">
+<script context="module" lang="ts">
   export type TopTab = {
     id: string;
     label: string;
     role: string;
   };
+</script>
 
+<script lang="ts">
   export let tabs: TopTab[] = [];
   export let activeTabId = '';
   export let activeRole = '';

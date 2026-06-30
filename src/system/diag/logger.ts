@@ -114,8 +114,8 @@ export class LoggerLite {
       scope,
       action,
       message,
-      data,
-      error
+      ...(data !== undefined ? { data } : {}),
+      ...(error !== undefined ? { error } : {})
     });
   }
 }

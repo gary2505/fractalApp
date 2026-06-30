@@ -77,6 +77,7 @@ export const averagedMetrics: Readable<AveragedMetrics | null> = derived(samples
 
   const cpuAvg = $samples.reduce((sum, s) => sum + s.cpu, 0) / $samples.length;
   const last = $samples[$samples.length - 1];
+  if (!last) return null;
   const ramPercent = last.ramTotal > 0 ? (last.ramUsed / last.ramTotal) * 100 : 0;
 
   return { cpuAvg, ramPercent, disk: latestDisk, allDisks: latestAllDisks };

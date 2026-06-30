@@ -45,7 +45,7 @@ export class RequestRunner {
           baseDelayMs: policy.baseDelayMs,
           maxDelayMs: policy.maxDelayMs,
           jitter: policy.jitter,
-          shouldRetry: policy.shouldRetry
+          ...(policy.shouldRetry ? { shouldRetry: policy.shouldRetry } : {})
         },
         combinedSignal
       );

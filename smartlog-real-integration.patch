@@ -1,0 +1,223 @@
+diff --git a/PROJECT-STAGE-V1-13.md b/PROJECT-STAGE-V1-13.md
+--- a/PROJECT-STAGE-V1-13.md
++++ b/PROJECT-STAGE-V1-13.md
+@@
++---
++
++## 2026-06-30 SmartLog v1 status
++
++Result:
++SmartLog backend registered; frontend smoke test passed; `cargo check` passed; temporary App.svelte smoke test removed.
++
++Files:
++- `src/core/bridge/bridge.ts`
++- `src/core/log/smart-log-types.ts`
++- `src/core/log/smart-log.ts`
++- `src-tauri/src/core.rs`
++
++Risk:
++Low. Backend/API smoke is proven; real app flow logging is next scope.
++
++Next:
++Integrate SmartLog v1 into real boot, main-version, and panel-toggle flows with quiet stable events.
++
+ diff --git a/src/core/log/smart-log-app-flow.ts b/src/core/log/smart-log-app-flow.ts
+ new file mode 100644
+ --- /dev/null
+ +++ b/src/core/log/smart-log-app-flow.ts
+@@
++import {
++  beginSmartUserAction,
++  logBootErr,
++  logBootOk,
++  smartLog
++} from './smart-log';
++
++import type { SmartLogData, SmartTrace } from './smart-log-types';
++
++type SmartActionTrace = Pick<SmartTrace, 'rid'>;
++type PanelId = 'P0' | 'P1' | 'P3H2' | 'P4';
++
++export function startSmartUiAction(prefix = 'ui'): SmartActionTrace {
++  return { rid: beginSmartUserAction(prefix) };
++}
++
++export function logAppBootOk(data?: SmartLogData) {
++  return logBootOk('app boot ok', data);
++}
++
++export function logAppBootErr(error: unknown, data?: SmartLogData) {
++  const nextData: SmartLogData = { ...(data ?? {}), error: errorMessage(error) };
++  return logBootErr('app boot err', nextData);
++}
++
++export function logMainVersionOpen(from: string, to: string, trace?: SmartActionTrace) {
++  return smartLog({
++    kind: 'ui',
++    tag: 'UI',
++    actor: 'App',
++    event: 'version.open',
++    msg: 'main version opened',
++    data: { from, to },
++    trace,
++    sample: false
++  });
++}
++
++export function logMainVersionActive(from: string, to: string, trace?: SmartActionTrace) {
++  return smartLog({
++    kind: 'state',
++    tag: 'STA',
++    actor: 'App',
++    event: 'version.active',
++    msg: 'active main version changed',
++    data: { from, to },
++    trace,
++    sample: false
++  });
++}
++
++export function logPanelToggle(panel: PanelId, data: SmartLogData, trace?: SmartActionTrace) {
++  return smartLog({
++    kind: 'panel',
++    tag: 'PAN',
++    actor: 'Main',
++    event: `${panel.toLowerCase()}.toggle`,
++    msg: `${panel} toggle`,
++    data: { panel, ...data },
++    trace,
++    sample: false
++  });
++}
++
++export function logIssueTraceSample(trace?: SmartActionTrace) {
++  return smartLog({
++    mode: 'issue',
++    kind: 'trace',
++    tag: 'TRC',
++    actor: 'IssueTrace',
++    event: 'issue.sample',
++    msg: 'issue trace sample',
++    data: { enabledByDefault: false },
++    trace,
++    sample: false
++  });
++}
++
++export function logHandledAppError(actor: string, error: unknown, data?: SmartLogData, trace?: SmartActionTrace) {
++  return smartLog({
++    kind: 'error',
++    tag: 'ERR',
++    actor,
++    level: 'error',
++    event: 'error.handled',
++    msg: errorMessage(error),
++    data,
++    trace,
++    sample: false
++  });
++}
++
++function errorMessage(error: unknown): string {
++  if (error instanceof Error) return error.message;
++  return String(error);
++}
++
+diff --git a/src/App.svelte b/src/App.svelte
+--- a/src/App.svelte
++++ b/src/App.svelte
+@@
+   import {
+     getDefaultMainWindowVersionId,
+     mainWindowMainVersions,
+     setDefaultMainWindowVersionId,
+     type MainWindowVersionId
+   } from './main-window/versions';
++  import {
++    logAppBootOk,
++    logMainVersionActive,
++    logMainVersionOpen,
++    startSmartUiAction
++  } from './core/log/smart-log-app-flow';
+@@
+   onMount(() => {
++    void logAppBootOk({ versionId: activeVersionId });
++
+     function onKeydown(event: KeyboardEvent) {
+@@
+   function openMainVersion(versionId: MainWindowVersionId) {
++    const from = activeVersionId;
++    const trace = startSmartUiAction();
++
+     activeVersionId = setDefaultMainWindowVersionId(versionId);
++    void logMainVersionOpen(from, activeVersionId, trace);
++
++    if (from !== activeVersionId) {
++      void logMainVersionActive(from, activeVersionId, trace);
++    }
++
+     isSwitcherOpen = false;
+   }
+diff --git a/src/main-window/main-v1-4.svelte b/src/main-window/main-v1-4.svelte
+--- a/src/main-window/main-v1-4.svelte
++++ b/src/main-window/main-v1-4.svelte
+@@
+   import { applyTheme } from '../core/theme/theme';
++  import { logPanelToggle, startSmartUiAction } from '../core/log/smart-log-app-flow';
+@@
+   if (event.ctrlKey && !event.altKey && key === 'b') {
+ 
+   event.preventDefault();
+ 
+-  p2HiddenByToggle = !p2HiddenByToggle;
++  toggleP0();
+ 
+   return;
+@@
++ function toggleP0() {
++  const trace = startSmartUiAction();
++  p2HiddenByToggle = !p2HiddenByToggle;
++  void logPanelToggle('P0', { visible: !p2HiddenByToggle, source: 'hotkey' }, trace);
++ }
++
+   function cycleP3H2() {
++  const trace = startSmartUiAction();
+ 
+   p3h2Hidden = !p3h2Hidden;
++
++  void logPanelToggle('P3H2', { hidden: p3h2Hidden }, trace);
+ 
+   }
+@@
+   function toggleAgentSide() {
++  const trace = startSmartUiAction();
+ 
+   p4OnLeft = !p4OnLeft;
+ 
+   p4Visible = true;
++
++  void logPanelToggle('P1', { visible: true, side: p4OnLeft ? 'left' : 'right' }, trace);
+ 
+   }
+@@
+   function toggleP4() {
++  const trace = startSmartUiAction();
+ 
+   p4Visible = !p4Visible;
+ 
+   if (p4Visible) p4v2Visible = false;
++
++  void logPanelToggle('P4', { visible: p4Visible }, trace);
+ 
+   }
+@@
+   function closeP4() {
++  const trace = startSmartUiAction();
+ 
+   p4Visible = false;
+ 
+   p4v2Visible = false;
++
++  void logPanelToggle('P4', { visible: false, source: 'close' }, trace);
+ 
+   }

@@ -95,7 +95,7 @@ export function createClickController(handlers: ClickHandlers, options: ClickCon
       currentAbort = null;
 
       if (pending) {
-        const next = pending;
+        const next = pending as { kind: ClickKind; event: MouseEvent };
         pending = null;
         setTimeout(() => void run(next.kind, next.event), 0);
       }

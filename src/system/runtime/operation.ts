@@ -52,9 +52,9 @@ export class OperationRuntime {
       operationId: options.operationId,
       kind: options.kind,
       owner: options.owner,
-      label: options.label,
-      timeoutMs: options.timeoutMs,
-      meta: options.meta,
+      ...(options.label !== undefined ? { label: options.label } : {}),
+      ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+      ...(options.meta !== undefined ? { meta: options.meta } : {}),
       startTime: now,
       lastActivity: now
     };
@@ -116,14 +116,14 @@ export class OperationRuntime {
 
   get(operationId: string): OperationInfo | undefined {
     const info = this.operations.get(operationId);
-    return info ? { ...info, meta: info.meta ? { ...info.meta } : undefined } : undefined;
+    return info ? { ...info, ...(info.meta ? { meta: { ...info.meta } } : {}) } : undefined;
   }
 
   list(filter?: { owner?: OperationOwner; kind?: OperationKind }): OperationInfo[] {
     return [...this.operations.values()]
       .filter((item) => !filter?.owner || item.owner === filter.owner)
       .filter((item) => !filter?.kind || item.kind === filter.kind)
-      .map((item) => ({ ...item, meta: item.meta ? { ...item.meta } : undefined }))
+      .map((item) => ({ ...item, ...(item.meta ? { meta: { ...item.meta } } : {}) }))
       .sort((a, b) => a.startTime - b.startTime);
   }
 
@@ -141,7 +141,7 @@ export class OperationRuntime {
     info.cancelReason = reason;
     info.ended = Date.now();
 
-    const snapshot = { ...info, meta: info.meta ? { ...info.meta } : undefined };
+    const snapshot = { ...info, ...(info.meta ? { meta: { ...info.meta } } : {}) };
     const listeners = [...(this.cancelListeners.get(operationId) ?? [])];
 
     for (const listener of listeners) {
