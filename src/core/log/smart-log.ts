@@ -157,19 +157,21 @@ export async function smartLog(input: SmartLogInput): Promise<SmartLogWriteResul
 }
 
 export function createSmartLogger(defaults: SmartLoggerDefaults) {
-  const base = (level: SmartLogLevel, event: string, msg?: string, data?: SmartLogData, extra?: Partial<SmartLogInput>) =>
-    smartLog({
-      mode: defaults.mode,
+  const base = (level: SmartLogLevel, event: string, msg?: string, data?: SmartLogData, extra?: Partial<SmartLogInput>) => {
+    const input: SmartLogInput = {
       kind: defaults.kind ?? 'ui',
-      tag: defaults.tag,
       actor: defaults.actor,
-      ctx: defaults.ctx,
-      ...extra,
       level,
-      event,
-      msg,
-      data
-    });
+      event
+    };
+    if (msg !== undefined) input.msg = msg;
+    if (defaults.mode !== undefined) input.mode = defaults.mode;
+    if (defaults.tag !== undefined) input.tag = defaults.tag;
+    if (defaults.ctx !== undefined) input.ctx = defaults.ctx;
+    if (data !== undefined) input.data = data;
+    if (extra) Object.assign(input, extra);
+    return smartLog(input);
+  };
 
   return {
     trace: (event: string, msg?: string, data?: SmartLogData, extra?: Partial<SmartLogInput>) => base('trace', event, msg, data, extra),
@@ -218,9 +220,13 @@ export const smartStateLog = createSmartLogger({ actor: 'State', kind: 'state', 
 export const smartAgentLog = createSmartLogger({ actor: 'Agent', kind: 'agent', tag: 'AGT' });
 
 export async function logBootOk(msg = 'boot ok', data?: SmartLogData): Promise<SmartLogWriteResult> {
-  return smartLog({ kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.ok', msg, data, sample: false });
+  const input: SmartLogInput = { kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.ok', msg, sample: false };
+  if (data !== undefined) input.data = data;
+  return smartLog(input);
 }
 
 export async function logBootErr(msg = 'boot err', data?: SmartLogData): Promise<SmartLogWriteResult> {
-  return smartLog({ kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.err', level: 'error', msg, data, sample: false });
+  const input: SmartLogInput = { kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.err', level: 'error', msg, sample: false };
+  if (data !== undefined) input.data = data;
+  return smartLog(input);
 }

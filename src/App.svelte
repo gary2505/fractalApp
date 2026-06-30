@@ -31,7 +31,12 @@
     }
 
     window.addEventListener('keydown', onKeydown);
-    return () => window.removeEventListener('keydown', onKeydown);
+    function onVersionSwitcher() { isSwitcherOpen = true; }
+    window.addEventListener('fractal:open-version-switcher', onVersionSwitcher);
+    return () => {
+      window.removeEventListener('keydown', onKeydown);
+      window.removeEventListener('fractal:open-version-switcher', onVersionSwitcher);
+    };
   });
 
   function openMainVersion(versionId: MainWindowVersionId) {

@@ -95,17 +95,17 @@
 </script>
 
 <footer id="status-bar" class="h-8 bg-base-200 text-base-content border-t border-base-300 px-2 flex items-center gap-3" aria-label="SBar status bar">
-  <span class="badge badge-outline">{versionId}</span>
+  <button id="status-bar-version" type="button" class="btn-app badge badge-outline cursor-pointer" title="Version switcher (Ctrl+Alt+Backspace)" onclick={() => dispatchEvent(new CustomEvent('fractal:open-version-switcher'))}>{versionId}</button>
   <span class="ml-auto"></span>
   <div class="join">
-    <button id="status-bar-lang-en" type="button" class="btn btn-ghost join-item min-h-0 h-6 px-2 {lang === 'EN' ? 'btn-active' : ''}" onclick={() => onChangeLang('EN')}>EN</button>
-    <button id="status-bar-lang-ru" type="button" class="btn btn-ghost join-item min-h-0 h-6 px-2 {lang === 'RU' ? 'btn-active' : ''}" onclick={() => onChangeLang('RU')}>RU</button>
+    <button id="status-bar-lang-en" type="button" class="btn-app btn btn-ghost join-item min-h-0 h-6 px-2 {lang === 'EN' ? 'btn-active' : ''}" onclick={() => onChangeLang('EN')}>EN</button>
+    <button id="status-bar-lang-ru" type="button" class="btn-app btn btn-ghost join-item min-h-0 h-6 px-2 {lang === 'RU' ? 'btn-active' : ''}" onclick={() => onChangeLang('RU')}>RU</button>
   </div>
   <div class="join">
-    <button id="status-bar-theme-dark" type="button" class="icon-app-base join-item {theme === 'dark' ? 'opacity-100' : ''}" title="Dark theme" onclick={() => onChangeTheme('dark')}>
+    <button id="status-bar-theme-dark" type="button" class="btn-app icon-app-base join-item {theme === 'dark' ? 'opacity-100' : ''}" title="Dark theme" onclick={() => onChangeTheme('dark')}>
       <svg class="icon-app-md" viewBox="0 0 24 24" fill="currentColor"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75 9.75 9.75 0 0110.5 2.248c-.21-.017-.42-.026-.63-.008A9.75 9.75 0 1018.748 14.25c.008-.21.008-.42-.008-.63z"/></svg>
     </button>
-    <button id="status-bar-theme-light" type="button" class="icon-app-base join-item {theme === 'light' ? 'opacity-100' : ''}" title="Light theme" onclick={() => onChangeTheme('light')}>
+    <button id="status-bar-theme-light" type="button" class="btn-app icon-app-base join-item {theme === 'light' ? 'opacity-100' : ''}" title="Light theme" onclick={() => onChangeTheme('light')}>
       <svg class="icon-app-md" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM5.25 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM19.03 4.97a.75.75 0 010 1.06l-1.59 1.59a.75.75 0 01-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM7.62 16.38a.75.75 0 010 1.06l-1.59 1.59a.75.75 0 01-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM4.97 4.97a.75.75 0 011.06 0l1.59 1.59a.75.75 0 01-1.06 1.06L4.97 6.03a.75.75 0 010-1.06zM16.38 16.38a.75.75 0 011.06 0l1.59 1.59a.75.75 0 01-1.06 1.06l-1.59-1.59a.75.75 0 010-1.06z"/></svg>
     </button>
   </div>

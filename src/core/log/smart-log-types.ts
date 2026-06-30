@@ -35,7 +35,7 @@ export type SmartTrace = {
   sid: string;
   rid: string;
   span: number;
-  p?: number;
+  p: number | undefined;
 };
 
 export type SmartLogContext = Record<string, unknown>;
@@ -53,12 +53,12 @@ export type SmartLogEvent = {
   sid: string;
   rid: string;
   span: number;
-  p?: number;
+  p: number | undefined;
   a: string;
   e: string;
   m: string;
-  c?: SmartLogContext;
-  d?: SmartLogData;
+  c: SmartLogContext | undefined;
+  d: SmartLogData | undefined;
 };
 
 export type SmartLogInput = {

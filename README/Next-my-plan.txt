@@ -1,0 +1,22 @@
+Silent mode: fix only. Zero narration. Only reply "done".
+Do not scan other files, do not run build/tests, do not running diagnostics
+FAST PATCH ONLY:  do not deep scan or  deep analysis. 
+
+V:\fractalApp\src\main-window\main-v1-4.svelt
+Do not change src\main-window\main-v1-3.svelte
+use only DaisyUI.  
+
+Next.
+When app run  detect async
+1. Detect  Web or Desktop app?
+2. Detect OS (windows / Linux/Apple OS)
+if detect failed  ->  windows by default.
+
+---------------------------------------for GPT 5.5 
+Continue fractalApp prompt.
+Repo: https://github.com/gary2505/fractalApp.git
+Latest stage: PROJECT-STAGE-V1-13.md.
+Next task:  logging system
+No coding until layout audit/plan is approved.
+
+Use short report: Result / Files / Risk / Next.

@@ -81,6 +81,24 @@ body {
   opacity: 1;  
 }
 
+/* ─── App button base — used on all buttons across the app ───────────── */
+.btn-app {
+  cursor: pointer !important;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-app:hover {
+  background: oklch(0 0 0 / 0.1);
+}
+.btn-app:active {
+  background: oklch(0 0 0 / 0.15);
+}
+
 /* ─── how it use sample ───────────────────────────────────────────  
    Use these classes like this in your HTML to get the user-configurable font sizes.  
    <h2 class="text-app-xl font-bold">  
