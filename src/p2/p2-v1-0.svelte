@@ -1,4 +1,4 @@
-<aside id="P2" class="w-56 bg-base-100 text-base-content border-r border-base-300 p-2 flex flex-col gap-2" aria-label="P2 files panel">
+<aside id="p2" class="w-56 bg-base-100 text-base-content border-r border-base-300 p-2 flex flex-col gap-2" aria-label="P2 files panel">
   <div class="font-semibold">Workspace / Folder Tree</div>
   <div class="join w-full">
     <input class="input input-bordered join-item min-h-0 h-8 w-full" value="fractalApp" aria-label="Workspace path" readonly />

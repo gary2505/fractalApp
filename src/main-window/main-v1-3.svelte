@@ -63,7 +63,7 @@
 
   onMount(() => {
     void initializeWindow();
-    // 🔍 SEARCH: applyTheme on boot so the SBAR select matches the actual theme
+    // 🔍 SEARCH: applyTheme on boot so the STATUSBAR select matches the actual theme
     applyTheme($theme);
   });
 
@@ -183,7 +183,7 @@
 }} />
 
 <div class="main-v1-3-shell" data-agent-left={p4OnLeft} data-agent-focus={agentFocus}>
-  <header id="TopRow" class="top-row">
+  <header id="top-row" class="top-row">
     <div class="top-tabs" aria-label="Main window role tabs">
       {#each topTabs as tab (tab.id)}
         <button
@@ -251,7 +251,7 @@
     </div>
   </header>
 
-  <section id="TopBar" class="top-bar">
+  <section id="top-bar" class="top-bar">
     {#if p4OnLeft}
       <button class="toolbar-btn icon-btn" type="button" title={p4Collapsed ? 'Open AI chat (Ctrl+Alt+B)' : 'Close AI chat (Ctrl+Alt+B)'} onclick={toggleP4}>
         <svg width="18" height="18" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" fill={p4Collapsed ? '#FCCE38' : '#666'}>
@@ -305,8 +305,8 @@
     {/if}
   </section>
 
-  <main id="MainRow" class:agent-left={p4OnLeft} class="main-row">
-    <aside id="P0" class:hidden={!p0Visible} class="panel p0">
+  <main id="main-row" class:agent-left={p4OnLeft} class="main-row">
+    <aside id="p0" class:hidden={!p0Visible} class="panel p0">
       <div class="rail-item active">AI</div>
       <div class="rail-item text-xs">Files</div>
       <div class="rail-item text-xs">Search</div>
@@ -337,7 +337,7 @@
       </button>
     </aside>
 
-    <aside id="P1" class:hidden={!p1Visible} class="panel p1" style="width:{p1Width}px; flex:0 0 {p1Width}px;">
+    <aside id="p1" class:hidden={!p1Visible} class="panel p1" style="width:{p1Width}px; flex:0 0 {p1Width}px;">
       <div class="panel-title text-xs">Pinned / Disks</div>
       <div class="tree-row active text-xs">Pinned</div>
       <div class="tree-row text-xs">Desktop</div>
@@ -351,7 +351,7 @@
       <PanelResizer direction="vertical" onResize={resizeP1} />
     {/if}
 
-    <aside id="P2" class:hidden={!p2Visible} class="panel p2" style="width:{p2Width}px; flex:0 0 {p2Width}px;">
+    <aside id="p2" class:hidden={!p2Visible} class="panel p2" style="width:{p2Width}px; flex:0 0 {p2Width}px;">
       <div class="panel-title">Workspace / Folder Tree</div>
       <div class="tree-row active">fractalApp</div>
       <div class="tree-row text-xs">src</div>
@@ -365,8 +365,8 @@
       <PanelResizer direction="vertical" onResize={resizeP2} />
     {/if}
 
-      <section id="P3" class="panel p3" class:has-maximized={p3h2Maximized}>
-      <section id="P3H1" class="p3h1">
+      <section id="p3" class="panel p3" class:has-maximized={p3h2Maximized}>
+      <section id="p3h1" class="p3h1">
         <div class="tab-strip">
           {#each p3h1Tabs as tab (tab)}
             <button class:active={activeP3H1Tab === tab} type="button" onclick={() => (activeP3H1Tab = tab)}>
@@ -388,7 +388,7 @@
       <div class="p3h2-zone" onmouseenter={p3h2OnMouseEnter} onmouseleave={p3h2OnMouseLeave}>
         <PanelResizer direction="horizontal" onResize={(d) => resizeP3H2(-d)} />
         <section
-          id="P3H2"
+          id="p3h2"
           class="p3h2"
           class:hidden={p3h2Hidden}
           class:maximized={p3h2Maximized}
@@ -434,7 +434,7 @@
       <PanelResizer direction="vertical" onResize={(d) => resizeP4(-d)} />
     {/if}
 
-    <aside id="P4" class:hidden={!p4Visible} class="panel p4" style="width:{p4Width}px; flex:0 0 {p4Width}px;">
+    <aside id="p4" class:hidden={!p4Visible} class="panel p4" style="width:{p4Width}px; flex:0 0 {p4Width}px;">
       <div class="p4-header">
         <div class="p4-tabs">
           {#each p4Tabs as tab (tab)}
@@ -474,7 +474,7 @@
     </aside>
   </main>
 
-  <footer id="SBar" class="status-bar text-xs">
+  <footer id="status-bar" class="status-bar text-xs">
     <button class="version-chip" type="button" title="Open main version switcher" onclick={onOpenSwitcher}>
       main-v1-34
     </button>
@@ -706,7 +706,7 @@
     display: none;
   }
 
-  .agent-left #P4 {
+  .agent-left #p4 {
     order: -1;
     border-left: 0;
     border-right: 1px solid var(--v3-border-strong);

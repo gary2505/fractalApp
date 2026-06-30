@@ -18,7 +18,7 @@
     "src/p3/p3h1/p3h1-v1-0.svelte",
     "src/p3/p3h2/p3h2-v1-0.svelte",
     "src/p4/p4-v1-0.svelte",
-    "src/sbar/sbar-v1-0.svelte",
+    "src/status-bar/status-bar-v1-0.svelte",
     "src/main-window/main-v1-4.contract.json",
     "src/main-window/main-v1-4.etalon.json",
     "src/main-window/manifest.json"

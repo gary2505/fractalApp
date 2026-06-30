@@ -6,6 +6,9 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+#[path = "metrics.rs"]
+mod metrics;
+
 const APP_NAME: &str = "fractalApp";
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 const WELCOME_HTML: &str = include_str!("../../cmp/welcome/1.0.0/index.html");
@@ -64,6 +67,9 @@ const LOG_IDS: &[&str] = &[
   "recovery.reset.ok",
   "recovery.reset.err",
 ];
+
+#[path = "smart_log.rs"]
+mod smart_log;
 
 #[derive(Clone, Copy)]
 struct ComponentSeed {
@@ -235,6 +241,10 @@ struct SettingsApplyResult {
 
 pub fn run() {
   tauri::Builder::default()
+    .setup(|app| {
+      metrics::start_metrics_loop(app.handle().clone());
+      Ok(())
+    })
     .invoke_handler(tauri::generate_handler![
       init_app,
       core_info,
@@ -251,10 +261,17 @@ pub fn run() {
       update_prepare_local,
       update_verify_candidate,
       update_switch_verified,
+      smart_log::smart_log_write,
+      smart_log::smart_log_read_last,
+      smart_log::smart_log_clear,
+      smart_log::smart_log_dir,
+      smart_log::smart_log_rotate,
       rollback_restore_prev,
       health_check,
       recovery_repair,
-      recovery_reset_manifest
+      recovery_reset_manifest,
+      get_disk_free_space,
+      get_top_processes
     ])
     .run(tauri::generate_context!())
     .expect("failed to run fractalApp");
@@ -969,4 +986,96 @@ fn sha256_hex(bytes: &[u8]) -> String {
   let mut hasher = Sha256::new();
   hasher.update(bytes);
   hex::encode(hasher.finalize())
+}
+
+// 🔍 SEARCH: "metrics-get-disk-free-space" — sysinfo-based disk free space for status bar
+#[derive(Debug, Serialize)]
+struct DiskSpaceInfo {
+  free_bytes: u64,
+  total_bytes: u64,
+  mount_point: String,
+}
+
+#[tauri::command]
+fn get_disk_free_space(path: String) -> AppResult<DiskSpaceInfo> {
+  use std::path::Path;
+  use sysinfo::Disks;
+
+  let target_path = Path::new(&path);
+  let target_str = target_path.to_string_lossy().to_uppercase();
+
+  let disks = Disks::new_with_refreshed_list();
+
+  let mut best_match: Option<DiskSpaceInfo> = None;
+  let mut best_match_len = 0;
+
+  for disk in &disks {
+    let mount = disk.mount_point().to_string_lossy().to_uppercase();
+    if target_str.starts_with(&mount) && mount.len() > best_match_len {
+      best_match_len = mount.len();
+      best_match = Some(DiskSpaceInfo {
+        free_bytes: disk.available_space(),
+        total_bytes: disk.total_space(),
+        mount_point: disk.mount_point().to_string_lossy().to_string(),
+      });
+    }
+  }
+
+  best_match.ok_or_else(|| AppError::manifest("DISK_NOT_FOUND", "no disk found for path", &path))
+}
+
+// 🔍 SEARCH: "top-processes" — on-hover top CPU/RAM processes for status bar
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct ProcessInfo {
+  name: String,
+  pid: String,
+  cpu_percent: f32,
+  mem_mb: f32,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct TopProcesses {
+  top_cpu: Vec<ProcessInfo>,
+  top_ram: Vec<ProcessInfo>,
+  mem_total_bytes: u64,
+}
+
+#[tauri::command]
+fn get_top_processes() -> AppResult<TopProcesses> {
+  use sysinfo::System;
+
+  let mut sys = System::new_all();
+  std::thread::sleep(std::time::Duration::from_millis(200));
+  sys.refresh_all();
+
+  let mem_total = sys.total_memory();
+
+  let mut procs: Vec<ProcessInfo> = sys.processes().iter().map(|(pid, proc)| {
+    ProcessInfo {
+      name: proc.name().to_string_lossy().to_string(),
+      pid: pid.to_string(),
+      cpu_percent: proc.cpu_usage(),
+      mem_mb: proc.memory() as f32 / (1024.0 * 1024.0),
+    }
+  }).collect();
+
+  procs.sort_by(|a, b| b.cpu_percent.partial_cmp(&a.cpu_percent).unwrap_or(std::cmp::Ordering::Equal));
+  let top_cpu: Vec<ProcessInfo> = procs.iter().take(5).map(|p| ProcessInfo {
+    name: p.name.clone(),
+    pid: p.pid.clone(),
+    cpu_percent: p.cpu_percent,
+    mem_mb: p.mem_mb,
+  }).collect();
+
+  procs.sort_by(|a, b| b.mem_mb.partial_cmp(&a.mem_mb).unwrap_or(std::cmp::Ordering::Equal));
+  let top_ram: Vec<ProcessInfo> = procs.iter().take(5).map(|p| ProcessInfo {
+    name: p.name.clone(),
+    pid: p.pid.clone(),
+    cpu_percent: p.cpu_percent,
+    mem_mb: p.mem_mb,
+  }).collect();
+
+  Ok(TopProcesses { top_cpu, top_ram, mem_total_bytes: mem_total })
 }

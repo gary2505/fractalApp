@@ -1,0 +1,456 @@
+⚠️
+Silent mode: fix only. Zero narration. Only reply "done".
+Do not scan other files, do not run build/tests, do not running diagnostics
+FAST PATCH ONLY:  do not deep scan or  deep analysis. 
+Just add llog to see why?
+Do not scan other files, do not run build/tests, do not running diagnostics
+- Do NOT narrate your thinking or analysis before coding.
+- No "let me check", no "the bug is", no reasoning out loud.
+- Go straight to tool calls and code. Minimal words, maximum action.
+- No explanations. Silent mode only.
+- STOP: Do NOT create approval/sign-off docs.
+- Code edits only unless I explicitly ask for documentation.
+
+⚠️----------✅ ⬜ → ◀ ▶ arrows
+Silent mode: fix only. Zero narration. Only reply "done".
+Silent mode:  Zero narration. Only reply "done".
+We have drawing tools with canvas and controller
+- `src/lib/P3/Preview/drawing/drawing-controller.svelte.ts`
+- `src/lib/P3/Preview/drawing/drawing-canvas.svelte`
+    - pointer start tracking + pointer-move jitter gate
+    - pointer-up tiny-drag cancel/keep logic
+Our workin PDF folder is `src/lib/features/pdf-js-v2/`
+**********************************************
+Add llog  to see why.
+## Session start
+1. Use `.ai/bundles/llog.md` for current-session logs only; it is truncated on app restart.
+## Logging
+- Canonical files:
+  - `.ai/bundles/llog.md`
+`Agent-llog-format-guide.md`.- `llog` format:
+  - `<t_ms>|<component>|<event>|<path>|<note>`
+- Use short, stable uppercase codes.
+- Log meaningful checkpoints only: start / finish / fail / lock / retry / guard.
+- Temporary logs use `T:<id>`.
+- Monitor logs use `M:<id>` and stay commented out by default.
+- Frontend call: `llog(component, event, context?, note?)`
+- Rust call: `debug_bundle::log_event(component, event, context?, note?)`
+- Follow the helper-block + one-line call-site rule from 
+- Every critical changed block must include:
+  - `// 🔍 SEARCH: "keyword" - purpose`
+  - `// Intent: constraint + decision + side effect`
+
+***********************************************
+Use this prompt:
+
+Continue in continuous mode. Audit the remaining PDF workspace/backend/README gaps, choose the highest-value safe next slice,
+implement it, sync PDF-workflow.md, validate the edited files, and then immediately continue to the next slice without stopping.
+Do not use web sources. Do not run tests, build, or check. Keep PDF inside P3 and keep the pdf-workspace name. 
+Add // 🔍 SEARCH: and // CRITICAL for next agent: comments around important logic edits.
+Only stop when there are no concrete safe slices left or you are genuinely blocked. Reply only done.
+
+Shorter version:
+
+Keep going autonomously until the PDF workspace audit is finished.
+ Pick the next real gap, fix it, sync the README, validate changed files, 
+and continue without asking me between slices.
+ No web. No tests/build/check. Reply only done.
+**********************************************
+🟢 Ready to connect
+🔴 SQL Server is stopped + button: Start service
+🟡 Wrong port — using 1435
+⚪ Checking…
+
+▭ Rectangle
+▢ Rounded Rectangle
+◯ Ellipse
+⬡ Polygon
+**********************
+Before you srart working, 
+tell me how you plan to check it. Show me you  check list.
+
+**************************
+!!! Silent mode: fix only. Zero narration. Reply "done".
+-
+Add it to /memories/session/ at session start.
+Paste it as the first line of every new message.
+Or save it to AGENT-PROMPT.md — I read that at session start.
+--
+- Do NOT narrate your thinking or analysis before coding.
+ No "let me check", no "the bug is", no reasoning out loud.
+- Go straight to tool calls and code. Minimal words, maximum action.
+- No explanations. Silent mode only.
+- STOP: Do NOT create approval/sign-off docs.
+- Code edits only unless I explicitly ask for documentation.
+
+- Do NOT explain changes after completing them. Just code silently.
+- No summaries, no bullet lists of what was done.
+- No explanations of what was fixed or why.
+- Only speak if asking a clarifying question.
+- Zero talking after edits — just confirm done or stay silent.
+*************************************
+Read skill [agent-customization]
+(copilot-skill:/agent-customization/SKILL.md?vscodeLinkType%3Dskill)
+Yes—across new chats, memory is short.  
+Use this each new chat: 
+**“Persistent mode: for this entire session, 
+read and strictly obey !AI-Agent-Session-Prompt.md as hard rules; 
+keep replies ≤3 lines, no extras/docs/explanations, 
+and if any conflict appears ask exactly one clarifying question then stop.”**
+⚠️⚠️
+FAST PATCH ONLY: Edit <file>:<line-range>; apply exactly <old→new>; 
+do not scan other files, do not run build/tests, 
+do not change behavior outside those lines, keep/add required 
+// 🔍 SEARCH + // CRITICAL comments, and reply only: done.
+⚠️⚠️⚠️⚠️
+Persistent mode: for this entire session.
+Code-only mode: Make only the requested code edits in existing project files;
+Always Add  Quick 🔍 SEARCH + CRITICAL comments, and reply only: done.
+do not create any new files/docs/logs/reports, 
+do not run checking output,or tests/built unless I explicitly say ‘run tests/built’,
+create separate files for new features. Keep main code do not too large.
+do not explain anything, and after edits reply only: ‘done’.
+Give me List of what needs testing.
+Silent mode: on. Code only. Reply "done" after edits. Zero narration.
+
+⚠️⚠️⚠️⚠️
+-----
+**********************************************
+⚠️⚠️
+Silent mode: fix only. Zero narration. Only sReply "done".
+ROLE: You are a surgical AI coding agent for this repo.
+MANDATORY PRE-EDIT CHECK (BLOCKING):
+1) Before editing any code, scan and read all existing `// 🔍 SEARCH:` and `// CRITICAL for next agent:` comments in the target file/section.
+2) Treat all CRITICAL invariants as hard rules.
+3) Do NOT change existing behavior unless I explicitly request it.
+4) For every critical block you modify, add/update comments in this exact format:
+
+ALWAYS leave / create  quick-search + CRITICAL comments when editing / new important logic.
+Format:
+// 🔍 SEARCH: "keyword 1" | "keyword 2" - purpose
+// CRITICAL for next agent:
+// 1) invariant
+// 2) invariant
+// 3) do-not-break rule
+Use strong keywords such as: "snap priority", "selection state", "history commit", "popup close guard", "hit test order".
+EXECUTION RULES:
+- Minimal, scoped edits only.
+- Preserve APIs, UX, and existing flows.
+- If any rule conflicts with the request, stop and ask one clarifying question.
+OUTPUT RULE:
+- Return only the edit result and: done.
+Silent mode: on. Code only. Reply "done" after edits. Zero narration.
+⚠️⚠️
+*********************************************
+See new llog.  what is Vertical  end poind and next gorzontal start point?
+Fill mini-palette 
+wants to add the ColorMiniPalette component to the 
+Settings Appearance section for "Folder icon color" 
+and "File icon color" buttons.
+*************************************
+🟢⚠️ 
+Silent mode: fix only. Zero narration. Only sReply "done".
+Read and Analyze  new/last llog (.ai\bundles\llog.md) performance data and identify ALL optimization opportunities:
+**Required analysis:**
+1. **Timeline gaps** - Find dt jumps >50ms, explain why
+2. **Redundant operations** - Multiple SAVE/LOAD/REBUILD for same data
+3. **Sequential vs parallel** - Operations that could run concurrently  
+4. **Startup sequence** - Which operations block app-ready?
+5. **Cache misses** - Repeated disk reads for unchanged data
+6. **Unnecessary rebuilds** - UI updates when data unchanged
+7. **Event storms** - Multiple triggers for same action <100ms apart
+8. **Double operations** -  like sorting after sorting or double filtering
+9. **Unnecessary session saving** - session saving only after  
+changes folder tree root path  or switches sort/group, also switches theme/language/tabs.
+
+**Output format:**
+For EACH issue found:
+- **Lines X-Y**: [brief description]
+- **Impact**: [time cost in ms]
+- **Root cause**: [1 sentence technical reason]
+- **Fix**: [specific code change needed]
+- **Priority**: CRITICAL (>200ms) | HIGH (>50ms) | MEDIUM (>20ms) | LOW (<20ms)
+
+Sort by priority. Show exact line numbers. No generic advice. 
+Show me only summarry.
+****************************************************************************
+⚠️ Right prompt.
+Here's what works:
+
+State the visual symptom + expected behavior in one sentence.
+"After clicking Apply, image visually jumps/resizes. It should stay exactly the same size and position."
+
+Tell me what NOT to touch.
+"Do not add guards, flags, or workarounds. Find the one line causing it and fix that line."
+
+Force me to explain before coding.
+"Before writing any code, tell me the exact line that causes the bug and why. Wait for my approval."
+
+Stop me early when I'm wrong.
+You did this well ("Why? Tell me Why need natW/natH?") — do it sooner. If my first explanation doesn't match what you see, say "Wrong. Try again. Read the llog."
+
+Give me the llog and ask a specific question.
+"Line 3015462 shows zoom=2.547, line 3019549 shows zoom=2.8235. Which function changed it? Show me the exact call chain."
+
+One fix per turn, verify, then next.
+"Fix only the zoom jump. Do not touch anything else. I will test and come back."
+
+The pattern that wasted your time: I kept adding layers (flags, pre-sizing, guards) instead of you forcing me to answer "which single line of code
+
+*****************************************************************************
+<!-- Svelte 4 -->
+on:click|stopPropagation={(e) => { doSomething(e); }}
+
+<!-- Svelte 5 -->
+onclick={(e) => { e.stopPropagation(); doSomething(e); }}
+--
+let panelRef: any;
+let panelRef: any = $state();
+******************************************
+⚠️----------
+No explanations. Silent mode only.
+
+Be concise. No reasoning. Just to do, not talking.
+Brief. No thoughts. Action only.
+No extras. No any md docs. Just that!
+Only short Summary report.
+List of what needs testing.
+-----------------------------------------
+You are talking a lot but issue still there. 
+What promt must be for you that  stop you talking, when  I'm not asking you about it.
+You just spend my tokens.  I need only you add log to monitoring where is the problem and fix it.
+ Show me the right prompt. 1 line. no codding, no audit code. 
+******************************************
+Add llog traces to P2 rebuild chain: after $order.visible updates,
+ after visibleGroupFiltered updates, inside scheduleRebuild,
+  inside executeRebuild, and at the SKIP_EMPTY guard. 
+  Restart app, paste llog, fix the break point.
+*******************************************
+Short prompt (copy/paste)
+-----------------
+Task: Find the exact source of the bug/performance issue in this repo.
+Rules: Do not give general advice. Identify the precise code 
+that causes the issue and prove it.
+Output format (must follow):
+Root cause: 1–2 sentences.
+Exact location: path/to/file:lineStart-lineEnd (include function name).
+Problematic code excerpt: paste only the minimal lines that cause it.
+Why this code fails: concrete reasoning tied to runtime
+ behavior (race, blocking, wrong order, etc.).
+Minimal fix patch: show a diff (-/+) changing only what’s needed.
+How to verify: exact steps + expected result (logs/events/UI).
+If you can’t prove it, say what evidence is missing and what file/log to open next.
+-----------
+Even stricter (one-liner)
+⚠️----------
+Be concise. No reasoning. Just to do, not talking.
+Brief. No thoughts. Action only.
+No extras. No any md docs. Just that!
+Only short Summary report.
+List of what needs testing.
+----------------
+Show me the exact lines of code that cause the issue 
+(file path + line numbers), paste the minimal snippet, 
+explain why it breaks, and provide a minimal diff fix + verification steps.
+No broad suggestions.
+No extras. No any summary md or docs. Just that!
+⚠️----------
+Be concise. No reasoning. Just answer/fix
+Brief. No thoughts. Action only.
+1-line summary only. No reasoning.
+List of what needs testing.
+
+No extras. No any md docs. Just that!
+Only Summary report.
+List of what needs testing
+⚠️Brief responses only.
+No verbose explanations.  Save tokens.
+Only Summary report
+List of what needs testing
+
+  Short response
+*****Currenrt****************************
+P2 Grid view: Click on Add new folder.
+still exist issue:
+1. input do not stay open after Newfolder appear, still  not editable.
+2.   do not session save after Add new folder!!!
+--------------------------------------------
+Problem: Context menu has excessive spacing, making it tall and hard to scan quickly.
+Changes:
+Row compression — Reduce item height and padding between rows
+Divider spacing — Remove/minimize gaps around horizontal separator lines
++New folder/file — Reduce font size by 1 step, shrink button dimensions
+Action icons — Set Copy, Cut, Paste, Rename, Delete icons to exactly 16px
+Result: Compact menu that fits more options in less vertical space without 
+sacrificing clarity.
+
+Done. Context menu now compressed:
+Quick actions: 16px icons, reduced padding/gap
+Dividers: minimal spacing
++New folder/file: smaller font (xs), reduced height (h-7), compact padding
+Action row height: 2.5rem
+--------------------------------------
+ No extras. No any md docs. Just that!  ↓    ↑  ▶ 👁 🔒
+-------------------------------------
+📄 {files} 📁 {folders} 🗑️ ✅ ⬜  🟢 🔴  🟡 😈 ↑↓  ◀ / ▶   🔒  [▼]  10-40° → 30° if snap step is 30°
+❌ 🔥 ⚠️ 📌 🔍 🎯📋 📍 🎬 ✅ 📈 💡📊 👤 🎨 ⚪ 📐 ⏱️ 🔄 📦 ⏭️ ⚙ → ⇾ ⇉ ⇒ ≥
+-------------------------------------
+## ⚠️ AI Response Guidelines
+"Create a short [X]. Keep it to 2-3 KB max. Just the essentials, no extras."
+" Do NOT create any additional documentation or summaries."
+"[Task]. Answer only what I asked. Stop after that."
+"[Task]. No documentation files unless I explicitly ask. Just implement/fix."
+
+"[Your actual request]. 
+- Keep it brief [2 KB max / 3 lines max]
+- No extras, no bonus docs
+- Just answer what I asked
+- Stop when done"
+
+Do not create any documentation without my permit.
+Be extremely concise: Limit to 1-3 sentences per response.
+No implementation details: Focus only on outcomes and status.
+Status updates only: Report progress, success/failure, or next steps.
+No thoughts or reasoning shown: Skip internal analysis or explanations.
+Brief responses only: Avoid elaboration; use bullet points or short phrases.
+No verbose explanations: Cut unnecessary words; save tokens.
+Only summary reports: Provide high-level overviews, not deep dives.
+List what needs testing: End with a bullet list of required tests or validations.
+Enforcement: If response exceeds 100 words, summarize further. Prioritize brevity over completeness.
+-----------------
+⚠️ AI Response Guidelines 
+Be extremely concise: Limit to 1-3 sentences per response.
+No implementation details: Focus only on outcomes and status.
+Status updates only: Report progress, success/failure, or next steps.
+No thoughts or reasoning shown: Skip internal analysis or explanations.
+Brief responses only: Avoid elaboration; use bullet points or short phrases.
+No verbose explanations: Cut unnecessary words; save tokens.
+Only summary reports: Provide high-level overviews, not deep dives.
+List what needs testing: End with a bullet list of required tests or validations.
+Enforcement: If response exceeds 100 words, summarize further. Prioritize brevity over completeness.
+----------------------
+IMPORTANT!!! You are only allowed to edit files inside P3. Do not touch P2 or components unless explicitly asked. 
+✅ Files ⬜Folders
+
+---------Create an index.ts -------------------------
+✅
+Create an index.ts file for folders with 2+ component exports.
+
+For each folder with 2 or more files:
+1. Find all .svelte, .ts component files (exclude index.ts, .test.ts)
+2. Generate export statements: export { default as ComponentName } from './file-name.svelte';
+3. Create index.ts with all exports
+4. Use PascalCase for export names (status-bar.svelte → StatusBar)
+
+Pattern:
+export { default as ComponentName } from './component-file.svelte';
+export { default as AnotherComponent } from './another-file.svelte';
+
+--------Rename---------------------
+✅
+Rename files from camelCase to kebab-case (lowercase with hyphens).
+
+For each file matching pattern [A-Z]*[a-z]*.{ts,svelte}:
+1. Convert name: StatusBarStore → status-bar-store
+2. Update all imports that reference the old filename
+3. Maintain export names (StatusBarStore export stays, just filename changes)
+
+Example conversions:
+- TabBar.svelte → tab-bar.svelte
+- ClipboardMenu.svelte → clipboard-menu.svelte
+- ExceptionLog.svelte → exception-log.svelte
+
+------Workflow.md-------------------------
+✅
+ Audit how  works  deletion and  copy-cut-paste in the fileUp project: 
+ Check the ContexMenu.svelte- UNDO and REDO logic.
+I need full workflow for UNDO and REDO after deleting .
+What files are used with its path+name?  (json, ts, svelte, rs (rust))
+Create simple diagram with how it is loading
+Important! How loading? (lazy imported - only loaded when component is used or other way)
+What is logic?  How it works?
+Create short diagram how it works on backend (Rust).
+What commands  are used?
+Create README/UNDO-REDO-Workflow.md
+-----
+ Audit how  works  deletion and  copy-cut-paste in the fileUp project: 
+ 
+I need full workflow for deleting and copy-paste separately.
+What files are used with its path+name?  (json, ts, svelte, rs (rust))
+Create simple diagram with how it is loading
+Important! How loading? (lazy imported - only loaded when component is used or other way)
+Does main.ts has the component import?
+What is logic?  How it works?
+Create short diagram how it works on backend (Rust).
+What commands  are used?
+
+Create README/Del-Copy-Paste-Workflow.md
+-----
+ audit how  works  statusbar in old fileUp project: lib/components/statusbar/
+I need full workflow.
+what files are used with its path+name?  (json, ts, svelte, rs (rust))
+Create simple diagram with how it loading
+Important! How loading? (lazy imported - only loaded when component is used or other way)
+Does main.ts has the component import?
+i18n initializes asynchronously but doesn't block app mount
+App renders immediately, i18n loads later on-demand
+what is logic?  how it works?
+what do we need to add a block it the statusbar?
+Create README/StatusBar-Workflow.md
+-------BUG------------------------------
+✅
+ROLE: You are a senior engineer developer on tauri 2+ svelte5+daisyUI with no runes.. 
+GOAL: Dev plan with production ready, bulletproof, best practice code  to create copy/cut/paste/delete  function like Windows 11 file explorer 
+
+ROLE: You are a senior engineer performing a SURGICAL BUGFIX. 
+GOAL: Fix the SINGLE issue described below without changing any other behavior.
+BUG SUMMARY:
+- Panel P2: double-click on folder NAME expands but does not navigate to make it root.
+- Expected: dblclick on NAME → navigate (become root). 
+Make deep audit to understand full pictures.
+
+SCOPE:
+- ALLOW: src/lib/P2/parts/TreeRow.svelte
+You can remove all IF/Else that for P1 panel
+
+3 line report
+--------------------------------------
+-⭐-⚠️/✅ /❌ ℹ️  🎯 📁 “🧾 Финансы”) 💼 Work, 👤 Personal, 🏦 Bank
+----------------header comment -------------------------
+Added a comprehensive header comment to the open file that includes:
+Rule 1 — File Header Standard (Required for every *.ts / *.svelte)
+- Every file MUST start with a single comprehensive header comment.
+- Header must be short, scannable, and include ONLY info that helps an agent decide:
+  “What is this file?”, “Who uses it?”, “What triggers it?”, “Where is the behavior routed?”
+  ! important! need files names with path. USED BY: <path1>+name, <path2>+name | NOT USED (dead/legacy)
+
+HEADER TEMPLATE (copy/paste)
+<!-- (Svelte) or /** (TS)
+====================================================================
+FILE: <repo-relative-path>
+LINES: <approx line count or "≤250 target">   (optional, keep rough)
+USED BY: <path1>+filename, <path2>+filename | NOT USED 
+* not for AI agent ( add not used if dead/legacy or no refference)
+PURPOSE: <1–2 sentences, concrete>
+TRIGGER: <how it runs/loads: import, route, mount, command, flow, event>
+EVENT FLOW: <one line: UI → Cmd → dispatch → Flow → tasks → contracts → bundle>
+FUNCTIONS: <comma-separated list of functions exported/major handlers>
+CRITICAL: <1–3 bullets: invariants / pitfalls / performance constraints>
+====================================================================
+-->
+Create prompt for AI agent with description the issue.
+Give list of files with path and lines number.
+What was the issues, how do you resolve it, what is result ?
+Show short workflow.
+If good, then  how to test.
+If have a new issue, describe it?
+What is next plan?
+Create README/ Current-stage-issue.md
+   
+### Edit-submode flow
+If current tool = Line
+double-click on rectangle edge = select object and enter “Edit Shape” submode
+but do not permanently switch the toolbar to Shape tool
+show a clear top label like Editing Rectangle
+show Esc to exit
+when user exits, restore Line tool automatically

@@ -1,0 +1,25 @@
+*** REQUIRED EXISTING-FILE CHANGES FOR FULL SMARTLOG STORAGE ***
+
+This ZIP contains only new files as requested.
+For full production storage in app.jsonl + issue-current.jsonl + error.jsonl,
+wire the new Rust module into the existing Tauri command list.
+
+1) In src-tauri/src/core.rs near other module declarations, add:
+
+mod smart_log;
+
+2) In tauri::generate_handler![ ... ], add:
+
+smart_log::smart_log_write,
+smart_log::smart_log_read_last,
+smart_log::smart_log_clear,
+smart_log::smart_log_dir,
+smart_log::smart_log_rotate,
+
+3) Optional after migration:
+- Keep existing log_write/log_read_last for compatibility.
+- New frontend SmartLog first tries smart_log_write.
+- If smart_log_write is not registered yet, it falls back to current log_write/app.jsonl.
+
+4) Do not add every new event id to old LOG_IDS.
+SmartLog v1 stores its own id inside the JSON row and does not need old LOG_IDS.

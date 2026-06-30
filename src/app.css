@@ -18,6 +18,14 @@
   font-family: var(--font-sans);
   --font-size-root: 14px;
   font-size: var(--font-size-root);
+
+  /* User font size settings — 4 logical levels.  
+     Defaults are relative to --font-size-root (1rem = 14px).  
+     Overridden at runtime by JS from user settings. */  
+  --size-sm: 0.75rem;   /* ~10.5px at 14px base */  
+  --size-md: 0.875rem;  /*  12.2px   — base */  
+  --size-lg: 1.25rem;   /* ~17.5px */  
+  --size-xl: 1.5rem;    /*  21px   */
 }
 
 html,
@@ -34,3 +42,48 @@ body {
 .core-scroll {
   scrollbar-width: thin;
 }
+/* ─── Logical font-size utilities ───────────────────────────────────────────  
+   Use these classes instead of Tailwind's text-sm / text-lg etc.  
+   Values come from :root variables → user can override via settings.  
+   ────────────────────────────────────────────────────────────────────────── */  
+.text-app-sm { font-size: var(--size-sm); }  
+.text-app-md { font-size: var(--size-md); }  
+.text-app-lg { font-size: var(--size-lg); }  
+.text-app-xl { font-size: var(--size-xl); }
+
+/* ─── Logical icon-size utilities ───────────────────────────────────────────  
+   Use these classes on SVG elements for consistent icon sizing.  
+   Values are fixed px (not relative to root font size).  
+   ────────────────────────────────────────────────────────────────────────── */  
+.icon-app-sm { width: 12px; height: 12px; }  
+.icon-app-md { width: 14px; height: 14px; }  
+.icon-app-lg { width: 18px; height: 18px; }
+
+/* ─── Icon button base style ─────────────────────────────────────────────  
+       Use on <button> wrappers, then place <svg class="icon-app-base"> or  
+       Unicode text inside.  
+   ────────────────────────────────────────────────────────────────────── */  
+.icon-app-base {  
+  width: 24px;  
+  height: 24px;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  border: 0;  
+  color: inherit;  
+  background: transparent;  
+  cursor: pointer;  
+  border-radius: 4px;  
+  opacity: 0.7;  
+}  
+.icon-app-base:hover {  
+  background: oklch(0 0 0 / 0.1);  
+  opacity: 1;  
+}
+
+/* ─── how it use sample ───────────────────────────────────────────  
+   Use these classes like this in your HTML to get the user-configurable font sizes.  
+   <h2 class="text-app-xl font-bold">  
+      My dialog  
+    </h2>
+   ────────────────────────────────────────────────────────────────────────── */

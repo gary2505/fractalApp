@@ -5,12 +5,12 @@
   export let onSelectTab: (tab: string) => void = () => {};
 </script>
 
-<section id="P3H1" class="flex-1 min-h-0 bg-base-100 text-base-content flex flex-col" aria-label="P3H1 editor panel">
+<section id="p3h1" class="flex-1 min-h-0 bg-base-100 text-base-content flex flex-col" aria-label="P3H1 editor panel">
   <div class="tabs tabs-box bg-base-200 rounded-none border-b border-base-300 p-1">
     {#each tabs as tab (tab)}
-      <button type="button" class="tab {activeTab === tab ? 'tab-active' : ''}" onclick={() => onSelectTab(tab)}>{tab}</button>
+      <button id="p3h1-tab-{tab.toLowerCase()}" type="button" class="tab {activeTab === tab ? 'tab-active' : ''}" onclick={() => onSelectTab(tab)}>{tab}</button>
     {/each}
-    <button type="button" class="tab ml-auto" title="More editor tabs">⋯</button>
+    <button id="p3h1-tab-more" type="button" class="tab ml-auto" title="More editor tabs">⋯</button>
   </div>
   <div class="flex-1 min-h-0 p-4 overflow-auto">
     <div class="mockup-code bg-base-200 text-base-content border border-base-300">

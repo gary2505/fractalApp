@@ -56,7 +56,7 @@
     "p3h1-v1-0.svelte",
     "p3h2-v1-0.svelte",
     "p4-v1-0.svelte",
-    "sbar-v1-0.svelte"
+    "status-bar-v1-0.svelte"
   ],
   "inputs": [
     "top tab click",

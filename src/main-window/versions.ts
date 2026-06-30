@@ -59,7 +59,7 @@ export const mainWindowVersions: WindowVersion<MainWindowVersionId>[] = [
     status: 'test',
     created: '2026-06-27',
     order: 50,
-    notes: 'Versioned child layout blocks: TopRow, TopBar, P0-P4, P3H1/P3H2, and SBar.'
+    notes: 'Versioned child layout blocks: top-row, top-bar, p0-p4, p3h1/p3h2, and status-bar.'
   }
 ];
 

@@ -142,3 +142,238 @@ No behavior recreation from memory.
 Only extract from exact working files or stop.**
 
 //No change to routing/default/version files unless you explicitly list them.
+---
+RouteLLM
+Routing to GPT-5.5 Instant
+
+Да, можете. На самом деле rust-analyzer создавался именно для этого сценария — чтобы любой редактор мог получить "умные" возможности для Rust.
+
+rust-analyzer — это не только расширение VS Code. Это отдельная программа (Language Server), которая общается с редактором по протоколу LSP (Language Server Protocol).
+
+Архитектура выглядит так:
+
+text
+Copy
+Ваш редактор  
+      │  
+      │ LSP (JSON-RPC по stdin/stdout)  
+      ▼  
++------------------+  
+|  rust-analyzer   |  
++------------------+  
+      │  
+      ▼  
+cargo check  
+Cargo.toml  
+Rust compiler  
+
+Ваш редактор отправляет запросы:
+
+    "Файл открыт."
+
+    "Пользователь изменил строку."
+
+    "Какой тип у этой переменной?"
+
+    "Дай автодополнение."
+
+rust-analyzer отвечает:
+
+    список ошибок;
+
+    подсказки;
+
+    переход к определению;
+
+    список методов;
+
+    rename symbol;
+
+    hover documentation;
+
+    и многое другое.
+
+Как использовать в своем редакторе?
+
+    Установить rust-analyzer.
+
+Самый простой способ:
+
+bash
+Copy
+rustup component add rust-analyzer  
+
+или скачать бинарник с GitHub.
+
+    Запустить процесс.
+
+Например:
+
+text
+Copy
+rust-analyzer  
+
+Он начинает ждать LSP-сообщения через stdin/stdout.
+
+    Реализовать LSP-клиент.
+
+Нужно реализовать стандартные сообщения:
+
+    initialize
+
+    initialized
+
+    textDocument/didOpen
+
+    textDocument/didChange
+
+    textDocument/completion
+
+    textDocument/hover
+
+    textDocument/definition
+
+    shutdown
+
+Это стандарт LSP, одинаковый для TypeScript, Rust, Python, Go и других языков.
+
+Например, при открытии файла отправляется сообщение примерно такого вида:
+
+json
+Copy
+{  
+  "jsonrpc": "2.0",  
+  "id": 1,  
+  "method": "textDocument/didOpen",  
+  "params": {  
+    "textDocument": {  
+      "uri": "file:///project/src/main.rs",  
+      "languageId": "rust",  
+      "version": 1,  
+      "text": "fn main() {}"  
+    }  
+  }  
+}  
+
+После этого можно запросить автодополнение:
+
+json
+Copy
+{  
+  "jsonrpc": "2.0",  
+  "id": 2,  
+  "method": "textDocument/completion",  
+  "params": {  
+    ...  
+  }  
+}  
+
+И rust-analyzer вернет список вариантов.
+
+Если ваш редактор написан на Tauri, то есть несколько вариантов интеграции:
+
+    если редактор на JavaScript/TypeScript, можно использовать готовую библиотеку LSP-клиента (например, vscode-languageserver-protocol для реализации протокола или другие LSP-клиенты);
+
+    если большая часть логики на Rust, можно использовать существующие Rust-библиотеки для работы с LSP или самостоятельно обмениваться JSON-RPC сообщениями.
+
+В итоге вам не нужно реализовывать анализ Rust самостоятельно — это огромная задача. Вы просто запускаете rust-analyzer как отдельный процесс и общаетесь с ним по LSP. Именно так работают VS Code, Zed, Helix, Neovim, Emacs, Kate и многие другие редакторы.
+
+Если вы создаете полноценный редактор на Tauri, это наиболее правильный и общепринятый подход.
+Установить rust-analyzer. bash
+rustup component add rust-analyzer
+rust-analyzer  
+Он начинает ждать LSP-сообщения через stdin/stdout.
+Нужно реализовать стандартные сообщения:
+
+    initialize
+
+    initialized
+
+    textDocument/didOpen
+
+    textDocument/didChange
+
+    textDocument/completion
+
+    textDocument/hover
+
+    textDocument/definition
+
+    shutdown
+
+Это стандарт LSP, одинаковый для TypeScript, Rust, Python, Go и других языков.
+Например, при открытии файла отправляется сообщение примерно такого вида:
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "textDocument/didOpen",
+  "params": {
+    "textDocument": {
+      "uri": "file:///project/src/main.rs",
+      "languageId": "rust",
+      "version": 1,
+      "text": "fn main() {}"
+    }
+  }
+}
+После этого можно запросить автодополнение:
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "textDocument/completion",
+  "params": {
+    ...
+  }
+}
+И rust-analyzer вернет список вариантов.
+
+Если ваш редактор написан на Tauri, то есть несколько вариантов интеграции:
+
+    если редактор на JavaScript/TypeScript, можно использовать готовую библиотеку LSP-клиента (например, vscode-languageserver-protocol для реализации протокола или другие LSP-клиенты);
+
+    если большая часть логики на Rust, можно использовать существующие Rust-библиотеки для работы с LSP или самостоятельно обмениваться JSON-RPC сообщениями.
+    На самом деле rust-analyzer создавался именно для этого сценария — чтобы любой редактор мог получить "умные" возможности для Rust.
+
+rust-analyzer — это не только расширение VS Code. Это отдельная программа (Language Server), которая общается с редактором по протоколу LSP (Language Server Protocol).
+
+Архитектура выглядит так:
+Ваш редактор
+      │
+      │ LSP (JSON-RPC по stdin/stdout)
+      ▼
++------------------+
+|  rust-analyzer   |
++------------------+
+      │
+      ▼
+cargo check
+Cargo.toml
+Rust compiler
+Ваш редактор отправляет запросы:
+
+    "Файл открыт."
+
+    "Пользователь изменил строку."
+
+    "Какой тип у этой переменной?"
+
+    "Дай автодополнение."
+
+rust-analyzer отвечает:
+
+    список ошибок;
+
+    подсказки;
+
+    переход к определению;
+
+    список методов;
+
+    rename symbol;  
+    hover documentation;
+
+    и многое другое.
+
+Как использовать в своем редакторе?
+
+    Установить rust-analyzer.

@@ -8,11 +8,12 @@
   import P2 from '../p2/p2-v1-0.svelte';
   import P3 from '../p3/p3-v1-0.svelte';
   import P4 from '../p4/p4-v1-0.svelte';
-  import SBar from '../sbar/sbar-v1-0.svelte';
+  import SBar from '../status-bar/status-bar-v1-0.svelte';
   import { closeWindow, initializeWindow, minimizeWindow, startDragging, toggleMaximize } from '$lib/tauri/window';
+  import { applyTheme } from '../core/theme/theme';
 
   type LangMode = 'EN' | 'RU';
-  type ThemeMode = 'system' | 'dark' | 'light';
+  type ThemeMode = 'dark' | 'light';
 
   type TopTab = {
     id: 'ai-editor' | 'file-explorer' | 'analysis' | 'review';
@@ -34,21 +35,37 @@
   let leftPanelMode = 0;
   let p2HiddenByToggle = false;
   let p3h2Hidden = false;
+  let p3h2Pinned = true;
+  let p3h2Maximized = false;
+  let p3h2Hover = false;
+  let p3h2ShowTimer: ReturnType<typeof setTimeout> | undefined;
+  let p3h2HideTimer: ReturnType<typeof setTimeout> | undefined;
+  let p3h2Height = 160;
   let p4Visible = true;
   let p4OnLeft = false;
   let p4v2Visible = false;
   let lang: LangMode = 'EN';
-  let theme: ThemeMode = 'system';
+  let theme: ThemeMode = 'dark';
 
   $: activeTab = topTabs.find((tab) => tab.id === activeTopTab);
   $: activeRole = activeTab?.role ?? 'AI Editor';
   $: p0Visible = leftPanelMode === 0 || leftPanelMode === 3;
   $: p1Visible = activeTopTab === 'file-explorer' && (leftPanelMode === 0 || leftPanelMode === 1);
   $: p2Visible = !p2HiddenByToggle;
-  $: leftToggleLabel = ['Hide P0', 'Hide P0 + P1', 'Hide P1', 'Show P0 + P1'][leftPanelMode] ?? 'Show P0 + P1';
-  $: status = `${activeRole} / ${p4Visible ? 'AI chat open' : 'AI chat closed'}`;
-
+  $: leftToggleLabel = (() => {
+    if (leftPanelMode === 0) return 'Hide side panel';
+    if (leftPanelMode === 1) return 'Show side panel';
+    if (leftPanelMode === 2) return 'Hide files panel';
+    return 'Show files panel';
+  })();
+  $: panelToggleTitle = (() => {
+    if (leftPanelMode === 0) return 'Hide side panel';
+    if (leftPanelMode === 1) return 'Show side panel';
+    if (leftPanelMode === 2) return 'Hide files panel';
+    return 'Show files panel';
+  })();
   onMount(() => {
+    applyTheme(theme);
     void initializeWindow();
 
     function onKeydown(event: KeyboardEvent) {
@@ -106,17 +123,43 @@
     activeTopTab = nextTab.id;
   }
 
-  function selectRole(id: string) {
-    const nextTab = topTabs.find((tab) => tab.id === id);
-    if (nextTab) selectTopTab(nextTab.id);
-  }
-
   function cycleLeftPanels() {
     leftPanelMode = (leftPanelMode + 1) % 4;
   }
 
   function cycleP3H2() {
     p3h2Hidden = !p3h2Hidden;
+  }
+
+  function closeP3H2() {
+    p3h2Hidden = true;
+  }
+
+  function togglePinP3H2() {
+    p3h2Pinned = !p3h2Pinned;
+  }
+
+  function toggleMaximizeP3H2() {
+    p3h2Maximized = !p3h2Maximized;
+    if (p3h2Maximized) p3h2Pinned = true;
+  }
+
+  function p3h2OnMouseEnter() {
+    clearTimeout(p3h2HideTimer);
+    if (!p3h2Pinned) {
+      p3h2ShowTimer = setTimeout(() => { p3h2Hover = true; }, 150);
+    }
+  }
+
+  function p3h2OnMouseLeave() {
+    clearTimeout(p3h2ShowTimer);
+    if (!p3h2Pinned) {
+      p3h2HideTimer = setTimeout(() => { p3h2Hover = false; }, 300);
+    }
+  }
+
+  function resizeP3H2(delta: number) {
+    p3h2Height = Math.max(80, Math.min(600, p3h2Height + delta));
   }
 
   function toggleAgentSide() {
@@ -160,25 +203,21 @@
   />
 
   <TopBar
-    {leftToggleLabel}
-    {p2Visible}
+    activeRole={activeRole}
+    panelToggleTitle={panelToggleTitle}
     {p4Visible}
     {p4OnLeft}
-    {p3h2Hidden}
     onToggleLeftPanels={cycleLeftPanels}
-    onToggleP2={() => (p2HiddenByToggle = !p2HiddenByToggle)}
-    onToggleP3H2={cycleP3H2}
-    onSwitchAgentSide={toggleAgentSide}
     onToggleP4={toggleP4}
   />
 
-  <section id="MainRow" class="flex-1 min-h-0 bg-base-100 text-base-content flex overflow-hidden">
+  <section id="main-row" class="flex-1 min-h-0 bg-base-100 text-base-content flex overflow-hidden">
     {#if p4Visible && p4OnLeft}
       <P4 tabs={p4Tabs} activeTab={activeP4Tab!} sidebarVisible={p4v2Visible} onSelectTab={(tab: string) => (activeP4Tab = tab)} onToggleSidebar={() => (p4v2Visible = !p4v2Visible)} onClose={closeP4} />
     {/if}
 
     {#if p0Visible}
-      <P0 {activeRole} onSelectRole={selectRole} />
+      <P0 />
     {/if}
 
     {#if p1Visible}
@@ -189,12 +228,12 @@
       <P2 />
     {/if}
 
-    <P3 {activeRole} {p3h2Hidden} />
+    <P3 {activeRole} {p3h2Hidden} {p3h2Pinned} {p3h2Maximized} {p3h2Hover} {p3h2Height} onCloseP3H2={closeP3H2} onTogglePinP3H2={togglePinP3H2} onToggleMaximizeP3H2={toggleMaximizeP3H2} onResizeP3H2={resizeP3H2} onP3H2MouseEnter={p3h2OnMouseEnter} onP3H2MouseLeave={p3h2OnMouseLeave} />
 
     {#if p4Visible && !p4OnLeft}
       <P4 tabs={p4Tabs} activeTab={activeP4Tab!} sidebarVisible={p4v2Visible} onSelectTab={(tab: string) => (activeP4Tab = tab)} onToggleSidebar={() => (p4v2Visible = !p4v2Visible)} onClose={closeP4} />
     {/if}
   </section>
 
-  <SBar {versionId} {lang} {theme} {status} onChangeLang={(value) => (lang = value)} onChangeTheme={(value) => (theme = value)} />
+  <SBar {versionId} {lang} {theme} onChangeLang={(value) => (lang = value)} onChangeTheme={(value) => { theme = value; applyTheme(value); }} />
 </div>

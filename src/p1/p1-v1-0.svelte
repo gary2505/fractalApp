@@ -1,4 +1,4 @@
-<aside id="P1" class="w-48 bg-base-100 text-base-content border-r border-base-300 p-2 flex flex-col gap-2" aria-label="P1 pinned and disks panel">
+<aside id="p1" class="w-48 bg-base-100 text-base-content border-r border-base-300 p-2 flex flex-col gap-2" aria-label="P1 pinned and disks panel">
   <div class="font-semibold">Pinned / Disks</div>
   <div class="menu bg-base-200 rounded-box p-1">
     <button type="button" class="btn btn-ghost justify-start min-h-0 h-8 px-2">Pinned</button>
