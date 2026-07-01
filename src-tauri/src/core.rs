@@ -2,8 +2,7 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use sha2::{Digest, Sha256};
-use std::fs::{self, OpenOptions};
-use std::io::Write;
+use std::fs;
 use std::path::{Path, PathBuf};
 
 #[path = "metrics.rs"]
@@ -18,55 +17,6 @@ const EDITOR_HTML: &str = include_str!("../../cmp/editor/1.0.0/index.html");
 const CHAT_HTML: &str = include_str!("../../cmp/chat/1.0.0/index.html");
 const TERMINAL_HTML: &str = include_str!("../../cmp/terminal/1.0.0/index.html");
 const SETTINGS_HTML_101: &str = include_str!("../../cmp/settings/1.0.1/index.html");
-
-const LOG_IDS: &[&str] = &[
-  "core.boot.ok",
-  "core.boot.err",
-  "state.next",
-  "mf.load.ok",
-  "mf.load.err",
-  "mf.validate.ok",
-  "mf.validate.err",
-  "bridge.cmd.ok",
-  "bridge.cmd.err",
-  "policy.allow",
-  "policy.block",
-  "cmp.load.ok",
-  "cmp.load.err",
-  "bind.intent.recv",
-  "bind.intent.block",
-  "bind.flow.ok",
-  "bind.flow.err",
-  "bind.patch.ok",
-  "bind.render.ok",
-  "bind.audit.ok",
-  "rl.sess.load.ok",
-  "rl.sess.save.ok",
-  "rl.path.restore.ok",
-  "update.prepare.ok",
-  "update.hash.ok",
-  "update.hash.err",
-  "update.signature.ok",
-  "update.signature.err",
-  "update.health.ok",
-  "update.health.err",
-  "update.switch.ok",
-  "rollback.ok",
-  "rollback.err",
-  "ai.patch.plan",
-  "ai.patch.diff",
-  "ai.patch.apply.ok",
-  "ai.patch.apply.err",
-  "ai.patch.gate.ok",
-  "ai.patch.gate.err",
-  "appdata.status.ok",
-  "health.check.ok",
-  "health.check.err",
-  "recovery.repair.ok",
-  "recovery.repair.err",
-  "recovery.reset.ok",
-  "recovery.reset.err",
-];
 
 #[path = "smart_log.rs"]
 mod smart_log;
@@ -135,40 +85,6 @@ struct Session {
   last_path: Option<String>,
   #[serde(rename = "updatedAt")]
   updated_at: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct LogInput {
-  id: String,
-  level: String,
-  #[serde(default, rename = "traceId")]
-  trace_id: Option<String>,
-  #[serde(default, rename = "workflowId")]
-  workflow_id: Option<String>,
-  #[serde(default, rename = "componentId")]
-  component_id: Option<String>,
-  #[serde(default, rename = "sessionId")]
-  session_id: Option<String>,
-  msg: String,
-  #[serde(default)]
-  data: Option<Value>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct LogRow {
-  time: String,
-  id: String,
-  level: String,
-  #[serde(rename = "traceId")]
-  trace_id: Option<String>,
-  #[serde(rename = "workflowId")]
-  workflow_id: Option<String>,
-  #[serde(rename = "componentId")]
-  component_id: Option<String>,
-  #[serde(rename = "sessionId")]
-  session_id: Option<String>,
-  msg: String,
-  data: Option<Value>,
 }
 
 #[derive(Debug, Serialize)]
@@ -266,6 +182,7 @@ pub fn run() {
       smart_log::smart_log_clear,
       smart_log::smart_log_dir,
       smart_log::smart_log_rotate,
+      smart_log::smart_log_run_event,
       rollback_restore_prev,
       health_check,
       recovery_repair,
@@ -282,7 +199,7 @@ fn init_app() -> AppResult<CoreInfo> {
   ensure_app_data()?;
   seed_components()?;
   seed_manifest()?;
-  write_known_log("core.boot.ok", "info", "app data initialized")?;
+
   core_info()
 }
 
@@ -310,7 +227,7 @@ fn app_data_status() -> AppResult<AppDataStatus> {
     root_exists: root.exists(),
     active_exists: root.join("mf/active.json").exists(),
   };
-  write_known_log("appdata.status.ok", "debug", "app data status read")?;
+
   Ok(status)
 }
 
@@ -318,8 +235,6 @@ fn app_data_status() -> AppResult<AppDataStatus> {
 #[tauri::command]
 fn health_check() -> AppResult<HealthReport> {
   let report = build_health_report()?;
-  let log_id = if report.ok { "health.check.ok" } else { "health.check.err" };
-  write_known_log(log_id, if report.ok { "info" } else { "warn" }, "health check completed")?;
   Ok(report)
 }
 
@@ -340,7 +255,7 @@ fn recovery_repair() -> AppResult<HealthReport> {
   if !log_path.exists() {
     write_text(&log_path, "")?;
   }
-  write_known_log("recovery.repair.ok", "warn", "app-data repair completed")?;
+
   build_health_report()
 }
 
@@ -353,7 +268,7 @@ fn recovery_reset_manifest() -> AppResult<HealthReport> {
   atomic_write_json(&root.join("mf/prev.json"), &empty_manifest())?;
   atomic_write_json(&root.join("mf/candidate.json"), &empty_manifest())?;
   atomic_write_json(&root.join("mf/verified.json"), &empty_manifest())?;
-  write_known_log("recovery.reset.ok", "warn", "manifest reset completed")?;
+
   build_health_report()
 }
 
@@ -381,10 +296,8 @@ fn settings_save(settings: Settings) -> AppResult<()> {
 #[tauri::command]
 fn settings_apply_intent(intent: BindingIntent) -> AppResult<SettingsApplyResult> {
   if intent.intent_type != "settings.apply" || intent.component_id != "settings" {
-    write_binding_log("bind.intent.block", &intent, "settings intent blocked")?;
     return Err(AppError::manifest("BAD_INTENT", "invalid settings intent", &intent.intent_type));
   }
-  write_binding_log("bind.intent.recv", &intent, "settings intent received")?;
   let before = settings_load()?;
   let settings = Settings {
     theme: json_str(&intent.payload, "theme", &before.theme),
@@ -394,10 +307,7 @@ fn settings_apply_intent(intent: BindingIntent) -> AppResult<SettingsApplyResult
   };
   validate_settings(&settings)?;
   atomic_write_json(&app_data_dir()?.join("set/settings.json"), &settings)?;
-  write_binding_log("bind.flow.ok", &intent, "settings flow ok")?;
   let patch = make_settings_patch(&intent, &before, &settings)?;
-  write_binding_log("bind.patch.ok", &intent, "settings patch ok")?;
-  write_binding_log("bind.audit.ok", &intent, "settings audit ok")?;
   Ok(SettingsApplyResult { settings, patch })
 }
 
@@ -421,53 +331,15 @@ fn session_save(session: Session) -> AppResult<()> {
   atomic_write_json(&path, &session)
 }
 
+// No-op stubs — old log_write/log_read_last removed, smart_log handles everything.
 #[tauri::command]
-fn log_write(input: LogInput) -> AppResult<()> {
-  if !LOG_IDS.contains(&input.id.as_str()) {
-    return Err(AppError::manifest("LOG_ID_UNKNOWN", "unknown log id", input.id));
-  }
-  let row = LogRow {
-    time: Utc::now().to_rfc3339(),
-    id: input.id,
-    level: input.level,
-    trace_id: input.trace_id,
-    workflow_id: input.workflow_id,
-    component_id: input.component_id,
-    session_id: input.session_id,
-    msg: input.msg,
-    data: input.data,
-  };
-  let path = app_data_dir()?.join("logs/app.jsonl");
-  if let Some(parent) = path.parent() {
-    fs::create_dir_all(parent).map_err(|e| AppError::storage("LOG_DIR", "cannot create log dir", e))?;
-  }
-  let mut file = OpenOptions::new()
-    .create(true)
-    .append(true)
-    .open(path)
-    .map_err(|e| AppError::storage("LOG_OPEN", "cannot open log file", e))?;
-  let line = serde_json::to_string(&row)
-    .map_err(|e| AppError::storage("LOG_SERIALIZE", "cannot serialize log row", e))?;
-  writeln!(file, "{line}").map_err(|e| AppError::storage("LOG_WRITE", "cannot write log", e))?;
+fn log_write() -> AppResult<()> {
   Ok(())
 }
 
 #[tauri::command]
-fn log_read_last(limit: usize) -> AppResult<Vec<LogRow>> {
-  let path = app_data_dir()?.join("logs/app.jsonl");
-  if !path.exists() {
-    return Ok(Vec::new());
-  }
-  let content = fs::read_to_string(path)
-    .map_err(|e| AppError::storage("LOG_READ", "cannot read logs", e))?;
-  let mut rows: Vec<LogRow> = content
-    .lines()
-    .rev()
-    .take(limit.min(200))
-    .filter_map(|line| serde_json::from_str::<LogRow>(line).ok())
-    .collect();
-  rows.reverse();
-  Ok(rows)
+fn log_read_last() -> AppResult<Vec<Value>> {
+  Ok(Vec::new())
 }
 
 #[tauri::command]
@@ -502,7 +374,7 @@ fn update_prepare_local() -> AppResult<UpdateStep> {
   ensure_app_data()?;
   seed_candidate_component()?;
   seed_candidate_manifest()?;
-  write_known_log("update.prepare.ok", "info", "local candidate prepared")?;
+
   Ok(UpdateStep {
     ok: true,
     message: "candidate welcome 1.0.1 prepared".into(),
@@ -518,9 +390,7 @@ fn update_verify_candidate() -> AppResult<UpdateStep> {
   let manifest: Value = read_json(&candidate_path)?;
   verify_manifest_component(&manifest, "welcome", true)?;
   atomic_write_json(&root.join("mf/verified.json"), &manifest)?;
-  write_known_log("update.hash.ok", "info", "candidate hash verified")?;
-  write_known_log("update.signature.ok", "info", "local signature accepted")?;
-  write_known_log("update.health.ok", "info", "candidate health verified")?;
+
   Ok(UpdateStep {
     ok: true,
     message: "candidate verified and written to verified.json".into(),
@@ -548,7 +418,7 @@ fn update_switch_verified() -> AppResult<UpdateStep> {
   atomic_write_json(&prev_path, &active)?;
   atomic_write_json(&active_path, &verified)?;
   atomic_write_json(&verified_path, &empty_manifest())?;
-  write_known_log("update.switch.ok", "info", "verified manifest switched to active")?;
+
   Ok(UpdateStep {
     ok: true,
     message: "active manifest switched to verified candidate".into(),
@@ -572,7 +442,7 @@ fn rollback_restore_prev() -> AppResult<UpdateStep> {
   atomic_write_json(&active_path, &prev)?;
   atomic_write_json(&candidate_path, &empty_manifest())?;
   atomic_write_json(&verified_path, &empty_manifest())?;
-  write_known_log("rollback.ok", "warn", "previous manifest restored")?;
+
   Ok(UpdateStep {
     ok: true,
     message: "previous active manifest restored and pending candidate cleared".into(),
@@ -846,7 +716,14 @@ fn verify_manifest_component(manifest: &Value, component_id: &str, require_signa
   }
   let signature = component.get("signature").and_then(Value::as_str).unwrap_or_default();
   if require_signature && signature.is_empty() {
-    write_known_log("update.signature.err", "error", "candidate signature missing")?;
+    let _ = smart_log::smart_log_write(smart_log::SmartLogInput {
+      v: 2, ts: String::new(), t: String::new(), l: "error".into(), mode: "app".into(),
+      kind: "verify".into(), tag: "VER".into(), id: "update.signature.err".into(),
+      sid: String::new(), rid: String::new(), span: 0, p: None, a: "core".into(),
+      e: "signature.missing".into(), m: "candidate signature missing".into(),
+      c: None,
+      d: Some(json!({ "errorId": "E_UPDATE_SIGNATURE", "file": "verify", "line": 0, "fn": "verify_manifest_component" })),
+    });
     return Err(AppError::manifest("BAD_SIGNATURE", "missing signature", component_id));
   }
   let rel_path = component.get("path").and_then(Value::as_str).unwrap_or_default();
@@ -857,11 +734,25 @@ fn verify_manifest_component(manifest: &Value, component_id: &str, require_signa
     .map_err(|e| AppError::storage("CMP_READ", "cannot read component", e))?;
   let actual_hash = sha256_hex(html.as_bytes());
   if actual_hash != expected_hash {
-    write_known_log("update.hash.err", "error", "candidate hash mismatch")?;
+    let _ = smart_log::smart_log_write(smart_log::SmartLogInput {
+      v: 2, ts: String::new(), t: String::new(), l: "error".into(), mode: "app".into(),
+      kind: "verify".into(), tag: "VER".into(), id: "update.hash.err".into(),
+      sid: String::new(), rid: String::new(), span: 0, p: None, a: "core".into(),
+      e: "hash.mismatch".into(), m: "candidate hash mismatch".into(),
+      c: None,
+      d: Some(json!({ "errorId": "E_UPDATE_HASH", "file": "verify", "line": 0, "fn": "verify_manifest_component" })),
+    });
     return Err(AppError::manifest("CMP_HASH", "component hash mismatch", actual_hash));
   }
   if !html.contains("health.ready") {
-    write_known_log("update.health.err", "error", "candidate health marker missing")?;
+    let _ = smart_log::smart_log_write(smart_log::SmartLogInput {
+      v: 2, ts: String::new(), t: String::new(), l: "error".into(), mode: "app".into(),
+      kind: "verify".into(), tag: "VER".into(), id: "update.health.err".into(),
+      sid: String::new(), rid: String::new(), span: 0, p: None, a: "core".into(),
+      e: "health.missing".into(), m: "candidate health marker missing".into(),
+      c: None,
+      d: Some(json!({ "errorId": "E_UPDATE_HEALTH", "file": "verify", "line": 0, "fn": "verify_manifest_component" })),
+    });
     return Err(AppError::manifest("BAD_HEALTH", "health marker missing", component_id));
   }
   Ok(())
@@ -880,19 +771,6 @@ fn active_version() -> AppResult<String> {
   let active: Value = manifest_load_active()?;
   manifest_version(&active, "welcome")
     .ok_or_else(|| AppError::manifest("NO_ACTIVE", "active component missing", "welcome"))
-}
-
-fn write_known_log(id: &str, level: &str, msg: &str) -> AppResult<()> {
-  log_write(LogInput {
-    id: id.into(),
-    level: level.into(),
-    trace_id: None,
-    workflow_id: None,
-    component_id: Some("core".into()),
-    session_id: None,
-    msg: msg.into(),
-    data: None,
-  })
 }
 
 fn json_str(value: &Value, key: &str, fallback: &str) -> String {
@@ -920,19 +798,6 @@ fn make_settings_patch(intent: &BindingIntent, before: &Settings, after: &Settin
     before_hash: sha256_hex(before_json.to_string().as_bytes()),
     after_hash: sha256_hex(after_json.to_string().as_bytes()),
     changes: after_json,
-  })
-}
-
-fn write_binding_log(id: &str, intent: &BindingIntent, msg: &str) -> AppResult<()> {
-  log_write(LogInput {
-    id: id.into(),
-    level: "info".into(),
-    trace_id: Some(intent.trace_id.clone()),
-    workflow_id: Some(intent.workflow_id.clone()),
-    component_id: Some(intent.component_id.clone()),
-    session_id: None,
-    msg: msg.into(),
-    data: Some(json!({ "source": intent.source, "intent": intent.intent_type })),
   })
 }
 

@@ -11,6 +11,7 @@
   import SBar from '../status-bar/status-bar-v1-0.svelte';
   import { closeWindow, initializeWindow, minimizeWindow, startDragging, toggleMaximize } from '$lib/tauri/window';
   import { applyTheme } from '../core/theme/theme';
+  import { logPanelToggle } from '../core/log/smart-log-app-flow';
 
   type LangMode = 'EN' | 'RU';
   type ThemeMode = 'dark' | 'light';
@@ -74,12 +75,14 @@
       if (event.ctrlKey && key === 'e') {
         event.preventDefault();
         toggleAgentSide();
+        void logPanelToggle('P1', !p4OnLeft);
         return;
       }
 
       if (event.ctrlKey && !event.altKey && key === 'b') {
         event.preventDefault();
         p2HiddenByToggle = !p2HiddenByToggle;
+        void logPanelToggle('P0', !p2HiddenByToggle);
         return;
       }
 
@@ -129,6 +132,7 @@
 
   function cycleP3H2() {
     p3h2Hidden = !p3h2Hidden;
+    void logPanelToggle('P3H2', !p3h2Hidden);
   }
 
   function closeP3H2() {
@@ -170,6 +174,7 @@
   function toggleP4() {
     p4Visible = !p4Visible;
     if (p4Visible) p4v2Visible = false;
+    void logPanelToggle('P4', p4Visible);
   }
 
   function closeP4() {

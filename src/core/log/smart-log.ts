@@ -94,24 +94,10 @@ function buildEvent(input: SmartLogInput): SmartLogEvent {
 async function writeSmartBackend(event: SmartLogEvent): Promise<'smart' | 'legacy' | 'memory'> {
   if (!config.backend) return 'memory';
 
-  try {
-    await bridgeInvoke('smart_log_write', { input: event });
-    return 'smart';
-  } catch (smartError) {
-    if (!config.fallbackToLegacy) throw smartError;
-
-    await writeLog({
-      id: legacyIdFor(event) as never,
-      level: event.l === 'fatal' ? 'error' : event.l === 'trace' ? 'debug' : event.l,
-      traceId: event.rid,
-      workflowId: event.id,
-      componentId: event.a,
-      sessionId: event.sid,
-      msg: event.m,
-      data: event
-    });
-    return 'legacy';
-  }
+  // 🔍 SEARCH: Only issue/error events go through smart_log_write (v1 objects).
+  // App-run events must use smart_log_run_event instead.
+  await bridgeInvoke('smart_log_write', { input: event });
+  return 'smart';
 }
 
 function writeConsole(event: SmartLogEvent): void {
@@ -214,19 +200,6 @@ export async function traceSmartOp<T>(input: SmartTraceOpInput, run: () => Promi
   }
 }
 
-export const smartAppLog = createSmartLogger({ actor: 'App', kind: 'system', tag: 'APP' });
-export const smartPanelLog = createSmartLogger({ actor: 'Panel', kind: 'panel', tag: 'PAN' });
-export const smartStateLog = createSmartLogger({ actor: 'State', kind: 'state', tag: 'STA' });
+// 🔍 SEARCH: Only for issue/error/fatal tracing via smart_log_write (v1 objects).
+// App-run events MUST use smart_log_run_event via smart-log-app-flow.ts.
 export const smartAgentLog = createSmartLogger({ actor: 'Agent', kind: 'agent', tag: 'AGT' });
-
-export async function logBootOk(msg = 'boot ok', data?: SmartLogData): Promise<SmartLogWriteResult> {
-  const input: SmartLogInput = { kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.ok', msg, sample: false };
-  if (data !== undefined) input.data = data;
-  return smartLog(input);
-}
-
-export async function logBootErr(msg = 'boot err', data?: SmartLogData): Promise<SmartLogWriteResult> {
-  const input: SmartLogInput = { kind: 'boot', tag: 'BOT', actor: 'Core', event: 'boot.err', level: 'error', msg, sample: false };
-  if (data !== undefined) input.data = data;
-  return smartLog(input);
-}

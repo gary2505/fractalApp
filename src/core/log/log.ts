@@ -18,10 +18,12 @@ export type LogRow = LogInput & {
   time: string;
 };
 
-export function writeLog(input: LogInput): Promise<void> {
-  return bridgeInvoke<void>('log_write', { input });
+// No-op — old log_write removed. smart_log handles all logging.
+export function writeLog(_input: LogInput): Promise<void> {
+  return bridgeInvoke<void>('log_write');
 }
 
-export function readLastLogs(limit = 50): Promise<LogRow[]> {
-  return bridgeInvoke<LogRow[]>('log_read_last', { limit });
+// No-op — old log_read_last removed. smart_log handles all reading.
+export function readLastLogs(_limit?: number): Promise<LogRow[]> {
+  return bridgeInvoke<LogRow[]>('log_read_last').then(() => []);
 }

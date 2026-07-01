@@ -42,7 +42,7 @@ export type SmartLogContext = Record<string, unknown>;
 export type SmartLogData = Record<string, unknown>;
 
 export type SmartLogEvent = {
-  v: 1;
+  v: 1 | 2;
   ts: string;
   t: string;
   l: SmartLogLevel;

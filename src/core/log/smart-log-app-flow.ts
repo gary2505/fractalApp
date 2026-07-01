@@ -1,96 +1,42 @@
-import {
-  beginSmartUserAction,
-  logBootErr,
-  logBootOk,
-  smartLog
-} from './smart-log';
+import { bridgeInvoke } from '../bridge/bridge';
 
-import type { SmartLogData, SmartTrace } from './smart-log-types';
+// 🔍 SEARCH: SmartLog v2 compact run event (array rows only)
+// CRITICAL for next agent: Never add top-level time/id/level/msg/data fields.
+// Never add traceId/workflowId/componentId/sessionId to app-run events.
+// Never nest duplicated event objects in data.
 
-type SmartActionTrace = Pick<SmartTrace, 'rid'>;
 type PanelId = 'P0' | 'P1' | 'P3H2' | 'P4';
 
-export function startSmartUiAction(prefix = 'ui'): SmartActionTrace {
-  return { rid: beginSmartUserAction(prefix) };
+function runEvent(ev: string, value?: Record<string, unknown> | string | number | boolean) {
+  return bridgeInvoke<void>('smart_log_run_event', { ev, value: value ?? null });
 }
 
-export function logAppBootOk(data?: SmartLogData) {
-  return logBootOk('app boot ok', data);
+export function logAppBoot(mainVersion: string, mode: 'dev' | 'prod') {
+  return runEvent('boot', { main: mainVersion, mode });
 }
 
-export function logAppBootErr(error: unknown, data?: SmartLogData) {
-  const nextData: SmartLogData = { ...(data ?? {}), error: errorMessage(error) };
-  return logBootErr('app boot err', nextData);
+export function logAppRunEnd() {
+  return runEvent('end');
 }
 
-export function logMainVersionOpen(from: string, to: string, trace?: SmartActionTrace) {
-  return smartLog({
-    kind: 'ui',
-    tag: 'UI',
-    actor: 'App',
-    event: 'version.open',
-    msg: 'main version opened',
-    data: { from, to },
-    ...(trace ? { trace } : {}),
-    sample: false
-  });
+export function logPanelToggle(panel: PanelId, open: boolean) {
+  const code = panel === 'P0' ? 'p0' : panel === 'P1' ? 'p1' : panel === 'P3H2' ? 'term' : 'ai';
+  return runEvent(code, open ? 1 : 0);
 }
 
-export function logMainVersionActive(from: string, to: string, trace?: SmartActionTrace) {
-  return smartLog({
-    kind: 'state',
-    tag: 'STA',
-    actor: 'App',
-    event: 'version.active',
-    msg: 'active main version changed',
-    data: { from, to },
-    ...(trace ? { trace } : {}),
-    sample: false
-  });
+export function logMainVersionChange(to: string) {
+  return runEvent('main', { to });
 }
 
-export function logPanelToggle(panel: PanelId, data: SmartLogData, trace?: SmartActionTrace) {
-  return smartLog({
-    kind: 'panel',
-    tag: 'PAN',
-    actor: 'Main',
-    event: `${panel.toLowerCase()}.toggle`,
-    msg: `${panel} toggle`,
-    data: { panel, ...data },
-    ...(trace ? { trace } : {}),
-    sample: false
-  });
+export function logAppError(errorId: string) {
+  return runEvent('err', errorId);
 }
 
-export function logIssueTraceSample(trace?: SmartActionTrace) {
-  return smartLog({
-    mode: 'issue',
-    kind: 'trace',
-    tag: 'TRC',
-    actor: 'IssueTrace',
-    event: 'issue.sample',
-    msg: 'issue trace sample',
-    data: { enabledByDefault: false },
-    ...(trace ? { trace } : {}),
-    sample: false
-  });
+export function logAppFatal(errorId: string) {
+  return runEvent('fatal', errorId);
 }
 
-export function logHandledAppError(actor: string, error: unknown, data?: SmartLogData, trace?: SmartActionTrace) {
-  return smartLog({
-    kind: 'error',
-    tag: 'ERR',
-    actor,
-    level: 'error',
-    event: 'error.handled',
-    msg: errorMessage(error),
-    ...(data !== undefined ? { data } : {}),
-    ...(trace ? { trace } : {}),
-    sample: false
-  });
-}
-
-function errorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return String(error);
+// Keep issue trace for backwards compatibility
+export function logIssueTraceSample() {
+  return runEvent('trace', 'issue.sample');
 }

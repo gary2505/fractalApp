@@ -17,6 +17,7 @@ export type BridgeCommand =
   | 'smart_log_read_last'
   | 'smart_log_clear'
   | 'smart_log_dir'
+  | 'smart_log_run_event'
   | 'manifest_load_active'
   | 'component_read'
   | 'update_prepare_local'

@@ -15,7 +15,7 @@ export async function readSmartLogs(file: SmartLogReadFile = 'app', limit = 200)
         const legacy = await readLastLogs(safeLimit);
         return legacy
           .map((row) => row.data)
-          .filter((item): item is SmartLogEvent => Boolean(item && typeof item === 'object' && (item as SmartLogEvent).v === 1));
+          .filter((item): item is SmartLogEvent => Boolean(item && typeof item === 'object' && ((item as SmartLogEvent).v === 1 || (item as SmartLogEvent).v === 2)));
       } catch {
         return readSmartLogMemory(safeLimit);
       }

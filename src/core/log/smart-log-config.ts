@@ -1,9 +1,9 @@
 import type { SmartLogKind, SmartLogLevel, SmartLogTag } from './smart-log-types';
 
-export const SMART_LOG_VERSION = 1 as const;
+export const SMART_LOG_VERSION = 2 as const;
 
 export const SMART_LOG_FILES = {
-  app: 'app.jsonl',
+  app: 'app-run.jsonl',
   issue: 'issue-current.jsonl',
   error: 'error.jsonl'
 } as const;

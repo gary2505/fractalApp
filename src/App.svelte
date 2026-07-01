@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-
   import MainV10 from './main-window/main-v1-0.svelte';
   import MainV11 from './main-window/main-v1-1.svelte';
   import MainV13 from './main-window/main-v1-3.svelte';
@@ -12,11 +11,18 @@
     setDefaultMainWindowVersionId,
     type MainWindowVersionId
   } from './main-window/versions';
+  import {
+    logAppBoot,
+    logAppRunEnd,
+    logMainVersionChange
+  } from './core/log/smart-log-app-flow';
 
   let isSwitcherOpen = false;
   let activeVersionId: MainWindowVersionId = getDefaultMainWindowVersionId();
 
   onMount(() => {
+    void logAppBoot(activeVersionId, import.meta.env.DEV ? 'dev' : 'prod');
+
     function onKeydown(event: KeyboardEvent) {
       if (event.ctrlKey && event.altKey && event.key === 'Backspace') {
         event.preventDefault();
@@ -30,17 +36,29 @@
       }
     }
 
+    function onVersionSwitcher() {
+      isSwitcherOpen = true;
+    }
+
+    function onBeforeUnload() {
+      void logAppRunEnd();
+    }
+
     window.addEventListener('keydown', onKeydown);
-    function onVersionSwitcher() { isSwitcherOpen = true; }
     window.addEventListener('fractal:open-version-switcher', onVersionSwitcher);
+    window.addEventListener('beforeunload', onBeforeUnload);
+
     return () => {
       window.removeEventListener('keydown', onKeydown);
       window.removeEventListener('fractal:open-version-switcher', onVersionSwitcher);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      void logAppRunEnd();
     };
   });
 
   function openMainVersion(versionId: MainWindowVersionId) {
     activeVersionId = setDefaultMainWindowVersionId(versionId);
+    void logMainVersionChange(versionId);
     isSwitcherOpen = false;
   }
 
