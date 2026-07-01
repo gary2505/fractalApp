@@ -15,7 +15,7 @@
   import { t, lang } from '../core/i18n/i18n';
   import { theme, applyTheme } from '../core/theme/theme';
   import { loadSettings, saveSettings } from '../core/set/settings';
-  import { writeLog } from '../core/log/log';
+  import { logAppBoot } from '../core/log/smart-log-app-flow';
   import type { Lang } from '../core/i18n/i18n';
   import type { ThemeMode } from '../core/theme/theme';
   import { MAIN_WINDOW_VERSION } from './versions';
@@ -37,7 +37,7 @@
       theme.set(settings.theme);
       applyTheme(settings.theme);
 
-      await writeLog({ id: 'core.boot.ok', level: 'info', msg: 'Core boot completed' });
+      void logAppBoot(MAIN_WINDOW_VERSION, import.meta.env.DEV ? 'dev' : 'prod');
       setCoreState('RUNNING');
       ready = true;
     } catch (error) {

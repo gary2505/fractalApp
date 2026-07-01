@@ -1,5 +1,6 @@
+// 🔍 SEARCH: core.boot.ok and health.check.ok removed — unused in active runtime.
+// CRITICAL for next agent: do not add back legacy v1 JSON log IDs.
 export const LOG_IDS = [
-  'core.boot.ok',
   'core.boot.err',
   'state.next',
   'mf.load.ok',
@@ -39,7 +40,6 @@ export const LOG_IDS = [
   'ai.patch.gate.ok',
   'ai.patch.gate.err',
   'appdata.status.ok',
-  'health.check.ok',
   'health.check.err',
   'recovery.repair.ok',
   'recovery.repair.err',

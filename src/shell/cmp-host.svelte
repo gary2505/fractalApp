@@ -3,7 +3,7 @@
   import { bridgeInvoke, type BridgeCommand, type BridgeMeta } from '../core/bridge/bridge';
   import { readComponent } from '../core/cmp/cmp';
   import type { AppSettings } from '../core/set/settings';
-  import { writeLog } from '../core/log/log';
+  import { logAppError } from '../core/log/smart-log-app-flow';
   import { t } from '../core/i18n/i18n';
 
   export let componentId: string;
@@ -37,12 +37,6 @@
 
   function markReady() {
     health = 'ok';
-    void writeLog({
-      id: 'cmp.load.ok',
-      level: 'info',
-      componentId,
-      msg: `${componentId} component loaded`
-    });
   }
 
   async function runBridge(data: ComponentMsg, target: Window) {
@@ -82,7 +76,7 @@
     } catch (err) {
       error = err instanceof Error ? err.message : String(err);
       health = 'error';
-      await writeLog({ id: 'cmp.load.err', level: 'error', componentId, msg: error });
+      void logAppError(`E_CMP_LOAD_${componentId}`);
     }
   }
 

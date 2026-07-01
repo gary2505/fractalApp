@@ -7,6 +7,17 @@ Current focus: `main-v1-4` layout split and project structure cleanup.
 
 ---
 
+## SmartLog v2 freeze note (2026-07-01)
+
+- SmartLog v2 compact pipe runtime is active (`smart_log_run_event` → `app-run.jsonl`).
+- Old SmartLog v1 JSON object runtime path is disabled (`smart_log_write` only for issue/error/fatal).
+- `llog.md` AI-agent temporary debug file is active (`src-tauri/src/llog.rs`).
+- Temporary `T:` llog blocks must be removed after fix.
+- Next block: persistent deduped SmartLog error files.
+- Do NOT revive `core.boot.ok`, `health.check.ok`, `logBootOk`, `logBootErr`, `write_known_log`.
+
+---
+
 ## new File structure
 
 `main-v1-4` is the next main layout version.  

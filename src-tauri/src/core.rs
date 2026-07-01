@@ -21,6 +21,9 @@ const SETTINGS_HTML_101: &str = include_str!("../../cmp/settings/1.0.1/index.htm
 #[path = "smart_log.rs"]
 mod smart_log;
 
+#[path = "llog.rs"]
+mod llog;
+
 #[derive(Clone, Copy)]
 struct ComponentSeed {
   id: &'static str,
@@ -122,6 +125,7 @@ struct UpdateStep {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct BindingIntent {
   id: String,
   #[serde(rename = "type")]
@@ -183,6 +187,8 @@ pub fn run() {
       smart_log::smart_log_dir,
       smart_log::smart_log_rotate,
       smart_log::smart_log_run_event,
+      smart_log::smart_log_error,
+      llog::llog_write,
       rollback_restore_prev,
       health_check,
       recovery_repair,
@@ -345,7 +351,20 @@ fn log_read_last() -> AppResult<Vec<Value>> {
 #[tauri::command]
 fn manifest_load_active() -> AppResult<Value> {
   let path = app_data_dir()?.join("mf/active.json");
-  read_json(&path)
+  match read_json(&path) {
+    Ok(v) => Ok(v),
+    Err(e) => {
+      let _ = smart_log::smart_log_error(
+        "error".into(),
+        "E_BOOT_MANIFEST_READ".into(),
+        "MF".into(),
+        format!("manifest read failed: {}", e.message),
+        Some("core.rs".into()),
+        Some(353_i64),
+      );
+      Err(e)
+    }
+  }
 }
 
 #[tauri::command]

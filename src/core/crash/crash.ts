@@ -1,5 +1,5 @@
 import { setCoreState } from '../state/state';
-import { writeLog } from '../log/log';
+import { logAppFatal } from '../log/smart-log-app-flow';
 
 export type CrashReason = {
   code: string;
@@ -8,11 +8,6 @@ export type CrashReason = {
 
 export async function openCrashScreen(reason: CrashReason): Promise<void> {
   setCoreState('CRASH');
-  await writeLog({
-    id: 'core.boot.err',
-    level: 'error',
-    componentId: 'core',
-    msg: reason.message,
-    data: reason
-  });
+  // 🔍 SEARCH: smart_log_run_event compact pipe row only
+  void logAppFatal(`F_CRASH_${reason.code}`);
 }

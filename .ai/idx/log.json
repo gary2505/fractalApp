@@ -1,6 +1,5 @@
 {
   "ids": [
-    "core.boot.ok",
     "core.boot.err",
     "state.next",
     "mf.load.ok",
@@ -40,7 +39,6 @@
     "ai.patch.gate.ok",
     "ai.patch.gate.err",
     "appdata.status.ok",
-    "health.check.ok",
     "health.check.err",
     "recovery.repair.ok",
     "recovery.repair.err",

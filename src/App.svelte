@@ -19,9 +19,15 @@
 
   let isSwitcherOpen = false;
   let activeVersionId: MainWindowVersionId = getDefaultMainWindowVersionId();
+  // 🔍 SEARCH: One-run boot guard — prevents double boot from Svelte remount / reactive re-run.
+  // CRITICAL for next agent: Do NOT move logAppBoot outside onMount without keeping the guard.
+  let bootLogged = false;
 
   onMount(() => {
-    void logAppBoot(activeVersionId, import.meta.env.DEV ? 'dev' : 'prod');
+    if (!bootLogged) {
+      bootLogged = true;
+      void logAppBoot(activeVersionId, import.meta.env.DEV ? 'dev' : 'prod');
+    }
 
     function onKeydown(event: KeyboardEvent) {
       if (event.ctrlKey && event.altKey && event.key === 'Backspace') {
@@ -40,7 +46,11 @@
       isSwitcherOpen = true;
     }
 
+    // 🔍 SEARCH: End is only written from cleanup (beforeunload / onMount return).
+    // Never log end from onMount body. Skip if refresh is in progress.
+    // CRITICAL for next agent: __FRACTALAPP_REFRESHING__ is set before clearSmartLogs in p0.
     function onBeforeUnload() {
+      if ((window as any).__FRACTALAPP_REFRESHING__) return;
       void logAppRunEnd();
     }
 
@@ -52,6 +62,7 @@
       window.removeEventListener('keydown', onKeydown);
       window.removeEventListener('fractal:open-version-switcher', onVersionSwitcher);
       window.removeEventListener('beforeunload', onBeforeUnload);
+      if ((window as any).__FRACTALAPP_REFRESHING__) return;
       void logAppRunEnd();
     };
   });

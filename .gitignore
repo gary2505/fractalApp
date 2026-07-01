@@ -6,3 +6,4 @@ src-tauri/target/
 .env
 .env.*
 !.env.example
+.ai/bundles/llog.md

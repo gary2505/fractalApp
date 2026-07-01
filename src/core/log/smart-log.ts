@@ -1,5 +1,4 @@
 import { bridgeInvoke } from '../bridge/bridge';
-import { writeLog } from './log';
 import {
   SMART_LOG_DEFAULTS,
   SMART_LOG_LEVEL_ORDER,
@@ -54,15 +53,6 @@ function shouldWrite(input: SmartLogInput, event: SmartLogEvent): boolean {
   return Math.random() < rate;
 }
 
-function legacyIdFor(event: SmartLogEvent): string {
-  if (event.kind === 'boot') return event.l === 'error' || event.l === 'fatal' ? 'core.boot.err' : 'core.boot.ok';
-  if (event.kind === 'state') return 'state.next';
-  if (event.kind === 'agent') return event.l === 'error' || event.l === 'fatal' ? 'ai.patch.apply.err' : 'ai.patch.plan';
-  if (event.kind === 'verify') return event.l === 'error' || event.l === 'fatal' ? 'ai.patch.gate.err' : 'ai.patch.gate.ok';
-  if (event.l === 'error' || event.l === 'fatal') return 'health.check.err';
-  return 'health.check.ok';
-}
-
 function buildEvent(input: SmartLogInput): SmartLogEvent {
   const trace = nextSmartTrace(input.trace);
   const level = normalizeLevel(input.level);
@@ -94,8 +84,12 @@ function buildEvent(input: SmartLogInput): SmartLogEvent {
 async function writeSmartBackend(event: SmartLogEvent): Promise<'smart' | 'legacy' | 'memory'> {
   if (!config.backend) return 'memory';
 
-  // 🔍 SEARCH: Only issue/error events go through smart_log_write (v1 objects).
-  // App-run events must use smart_log_run_event instead.
+  // 🔍 SEARCH: Only issue/error events go through smart_log_write.
+  // App-run events must use smart_log_run_event via smart-log-app-flow.ts.
+  // CRITICAL for next agent: never send app/panel/ui/boot/state events here.
+  const isIssueOrError = event.mode === 'issue' || event.l === 'error' || event.l === 'fatal' || event.kind === 'error' || event.kind === 'fatal';
+  if (!isIssueOrError) return 'memory';
+
   await bridgeInvoke('smart_log_write', { input: event });
   return 'smart';
 }
@@ -142,6 +136,9 @@ export async function smartLog(input: SmartLogInput): Promise<SmartLogWriteResul
   }
 }
 
+// LEGACY issue/error only — not for runtime boot/toggle logs.
+// CRITICAL for next agent: do not use this for normal runtime rows.
+// App-run events MUST use smart_log_run_event via smart-log-app-flow.ts.
 export function createSmartLogger(defaults: SmartLoggerDefaults) {
   const base = (level: SmartLogLevel, event: string, msg?: string, data?: SmartLogData, extra?: Partial<SmartLogInput>) => {
     const input: SmartLogInput = {
@@ -202,4 +199,6 @@ export async function traceSmartOp<T>(input: SmartTraceOpInput, run: () => Promi
 
 // 🔍 SEARCH: Only for issue/error/fatal tracing via smart_log_write (v1 objects).
 // App-run events MUST use smart_log_run_event via smart-log-app-flow.ts.
+// LEGACY — only for issue/error/fatal tracing via smart_log_write (v1 objects).
+// Not used by any active source. Remove when issue trace path is retired.
 export const smartAgentLog = createSmartLogger({ actor: 'Agent', kind: 'agent', tag: 'AGT' });

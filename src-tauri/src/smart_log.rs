@@ -9,7 +9,6 @@ use std::time::Instant;
 
 const APP_NAME: &str = "fractalApp";
 const APP_RUN_FILE: &str = "app-run.jsonl";
-const APP_CRASH_PREV_FILE: &str = "app-crash-prev.jsonl";
 const ISSUE_FILE: &str = "issue-current.jsonl";
 const ERROR_PREFIX: &str = "error";
 const CRITICAL_PREFIX: &str = "critical";
@@ -18,6 +17,9 @@ const MAX_READ_LIMIT: usize = 1000;
 const MAX_LINE_BYTES: usize = 8 * 1024;
 const ISSUE_ROTATE_BYTES: u64 = 2 * 1024 * 1024;
 const ROTATE_KEEP: usize = 3;
+
+// 🔍 SEARCH: SmartLog v2 pipe format — plain text rows, no JSON in app-run.
+// CRITICAL for next agent: Never use serde_json for runtime rows.
 
 #[derive(Debug, Clone, Deserialize)]
 #[allow(dead_code)]
@@ -61,6 +63,7 @@ struct RuntimeState {
     last_sig: String,
     last_ms: u64,
     ended: bool,
+    booted: bool,
 }
 
 impl Default for RuntimeState {
@@ -69,16 +72,56 @@ impl Default for RuntimeState {
             initialized: false,
             start: None,
             start_iso: String::new(),
-            main: "unknown".into(),
+            main: String::new(),
             mode: "dev".into(),
             last_sig: String::new(),
             last_ms: 0,
             ended: false,
+            booted: false,
         }
     }
 }
 
 static RUNTIME: OnceLock<Mutex<RuntimeState>> = OnceLock::new();
+
+// 🔍 SEARCH: smart_log_error — persistent deduped error command (v2 monthly JSON).
+// CRITICAL for next agent: use this for all real error paths, not boot/toggles.
+#[tauri::command]
+pub fn smart_log_error(
+    level: String,
+    error_id: String,
+    where_code: String,
+    msg: String,
+    file: Option<String>,
+    line: Option<i64>,
+) -> Result<(), String> {
+    if !matches!(level.as_str(), "error" | "critical" | "fatal") {
+        return Err("LOG_BAD_LEVEL".into());
+    }
+
+    let bucket = match level.as_str() {
+        "fatal" => FATAL_PREFIX,
+        "critical" => CRITICAL_PREFIX,
+        _ => ERROR_PREFIX,
+    };
+
+    let mut state = runtime().lock().map_err(|_| "LOG_LOCK".to_string())?;
+    ensure_run_started(&mut state)?;
+
+    let ms = elapsed_ms(&state);
+
+    upsert_error_direct(bucket, &error_id, &where_code, &msg, file.as_deref(), line)?;
+
+    let ev = if bucket == FATAL_PREFIX { "FA" } else { "ER" };
+    let line = format!("{}|AP|{}||{}", ms, ev, error_id);
+
+    if bucket == FATAL_PREFIX {
+        // Fatal: flush immediately, no dedup
+        write_pipe_line(&line)
+    } else {
+        append_deduped(&mut state, ms, line)
+    }
+}
 
 #[tauri::command]
 pub fn smart_log_write(input: SmartLogInput) -> Result<(), String> {
@@ -102,9 +145,10 @@ pub fn smart_log_write(input: SmartLogInput) -> Result<(), String> {
     }
 
     if is_error_event(&input) {
-        let (bucket, error_id) = upsert_error(&input)?;
-        let ev = if bucket == FATAL_PREFIX { "fatal" } else { "err" };
-        return append_deduped(&mut state, ms, json!([ms, ev, error_id]));
+        let (bucket, error_id) = upsert_error_from_input(&input)?;
+        let ev = if bucket == FATAL_PREFIX { "FA" } else { "ER" };
+        let line = format!("{}|AP|{}||{}", ms, ev, error_id);
+        return append_deduped(&mut state, ms, line);
     }
 
     Ok(())
@@ -117,36 +161,55 @@ pub fn smart_log_run_event(ev: String, value: Option<Value>) -> Result<(), Strin
 
     let ms = elapsed_ms(&state);
 
-    if ev == "run.end" || ev == "end" {
-        if !state.ended {
-            append_app_row(&json!(["END", ms]))?;
-            state.ended = true;
-        }
-        return Ok(());
-    }
+    // 🔍 SEARCH: SmartLog v2 pipe format. All rows are plain text with pipe separators.
+    // Format: {ms}|{component}|{event}||{extra}
+    // CRITICAL for next agent: Never use serde_json for runtime rows.
 
     match ev.as_str() {
-        "boot" => {
-            // boot may carry main/mode metadata from frontend
+        "BT" => {
+            // Boot — must run exactly once, after main version is known.
+            // If END already written, ignore boot.
+            if state.ended || state.booted {
+                return Ok(());
+            }
+            // Extract main/mode from frontend value
             if let Some(obj) = value.as_ref().and_then(|v| v.as_object()) {
-                if let Some(main) = obj.get("main").or_else(|| obj.get("mainVersion")).and_then(Value::as_str) {
+                if let Some(main) = obj.get("main").and_then(Value::as_str) {
                     state.main = main.to_string();
                 }
                 if let Some(mode) = obj.get("mode").and_then(Value::as_str) {
                     state.mode = mode.to_string();
                 }
             }
-            return append_deduped(&mut state, ms, json!([ms, "boot"]));
-        }
-        "p0" | "p1" | "term" | "ai" => {
-            let v = match &value {
-                Some(v) => value_to_i64(v),
-                None => None,
-            };
-            if let Some(num) = v {
-                return append_deduped(&mut state, ms, json!([ms, ev.as_str(), num]));
+            if state.main.is_empty() {
+                state.main = "unknown".into();
             }
-            return Ok(());
+            // Write header first, then boot row
+            let header = format!("H|2|{}|{}|{}|{}", state.start_iso, APP_NAME, state.main, state.mode);
+            write_pipe_line(&header)?;
+            let line = format!("{}|AP|BT||", ms);
+            write_pipe_line(&line)?;
+            state.booted = true;
+            state.last_sig = line;
+            state.last_ms = ms;
+            Ok(())
+        }
+        "EN" => {
+            // End — only from cleanup/app close path.
+            if state.ended {
+                return Ok(());
+            }
+            let line = format!("{}|AP|EN||", ms);
+            write_pipe_line(&line)?;
+            state.ended = true;
+            Ok(())
+        }
+        "P0" | "P1" | "TM" | "AI" => {
+            // UI toggle events
+            let v = value.as_ref().and_then(value_to_i64).unwrap_or(0);
+            let extra = if v != 0 { "open=1" } else { "open=0" };
+            let line = format!("{}|UI|{}||{}", ms, ev, extra);
+            append_deduped(&mut state, ms, line)
         }
         "main" => {
             let to = value
@@ -166,26 +229,33 @@ pub fn smart_log_run_event(ev: String, value: Option<Value>) -> Result<(), Strin
                     return Ok(());
                 }
                 state.main = to.clone();
-                return append_deduped(&mut state, ms, json!([ms, "main", to]));
+                let line = format!("{}|AP|MV||{}", ms, to);
+                return append_deduped(&mut state, ms, line);
             }
-            return Ok(());
+            Ok(())
         }
-        "err" | "fatal" => {
+        "err" => {
             if let Some(id) = value.as_ref().and_then(|v| v.as_str()) {
-                return append_deduped(&mut state, ms, json!([ms, ev.as_str(), id]));
+                let line = format!("{}|AP|ER||{}", ms, id);
+                return append_deduped(&mut state, ms, line);
             }
-            return Ok(());
+            Ok(())
+        }
+        "fatal" => {
+            if let Some(id) = value.as_ref().and_then(|v| v.as_str()) {
+                let line = format!("{}|AP|FA||{}", ms, id);
+                return append_deduped(&mut state, ms, line);
+            }
+            Ok(())
         }
         "trace" => {
             if let Some(id) = value.as_ref().and_then(|v| v.as_str()) {
-                return append_deduped(&mut state, ms, json!([ms, "trace", id]));
+                let line = format!("{}|AP|TR||{}", ms, id);
+                return append_deduped(&mut state, ms, line);
             }
-            return Ok(());
+            Ok(())
         }
-        _ => {
-            // Unknown event types are ignored silently
-            return Ok(());
-        }
+        _ => Ok(()),
     }
 }
 
@@ -228,6 +298,16 @@ pub fn smart_log_clear(file: String) -> Result<(), String> {
     if path.exists() {
         fs::remove_file(path).map_err(|e| format!("LOG_CLEAR: {e}"))?;
     }
+    // 🔍 SEARCH: Reset runtime state so next BT creates fresh app-run.jsonl.
+    // CRITICAL for next agent: The Tauri process stays alive across page reloads,
+    // so RUNTIME retains old initialized/booted/ended flags after refresh.
+    if file == "app" {
+        if let Ok(mut state) = runtime().lock() {
+            state.initialized = false;
+            state.booted = false;
+            state.ended = false;
+        }
+    }
     Ok(())
 }
 
@@ -254,12 +334,13 @@ fn ensure_run_started(state: &mut RuntimeState) -> Result<(), String> {
     let run_path = dir.join(APP_RUN_FILE);
     if run_path.exists() {
         if previous_run_ended(&run_path)? {
+            // Clean end: safe to remove and start fresh
             fs::remove_file(&run_path).map_err(|e| format!("LOG_RESET: {e}"))?;
         } else {
-            let crash_path = dir.join(APP_CRASH_PREV_FILE);
-            if crash_path.exists() {
-                fs::remove_file(&crash_path).map_err(|e| format!("LOG_CRASH_REMOVE: {e}"))?;
-            }
+            // 🔍 SEARCH: previous run crashed — preserve as timestamped crash file.
+            // CRITICAL for next agent: never overwrite existing crash files; use counter suffix.
+            let crash_name = crash_file_name(&dir)?;
+            let crash_path = dir.join(&crash_name);
             fs::rename(&run_path, &crash_path).map_err(|e| format!("LOG_CRASH_RENAME: {e}"))?;
         }
     }
@@ -272,21 +353,33 @@ fn ensure_run_started(state: &mut RuntimeState) -> Result<(), String> {
     let now = Utc::now();
     state.initialized = true;
     state.ended = false;
+    state.booted = false;
     state.start = Some(Instant::now());
-    state.start_iso = now.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
-    state.main = "unknown".into();
+    state.start_iso = now.format("%y%m%dT%H:%MZ").to_string();
+    state.main.clear();
     state.mode = "dev".into();
 
-    let header = json!([
-        "H",
-        2,
-        state.start_iso,
-        APP_NAME,
-        state.main,
-        state.mode,
-        ["ms", "ev", "v"]
-    ]);
-    append_app_row(&header)
+    // 🔍 SEARCH: Header is deferred until BT event provides real main version.
+    // CRITICAL for next agent: Do NOT write header here — main version is unknown.
+    Ok(())
+}
+
+// 🔍 SEARCH: crash_file_name — generate unique timestamped crash log name.
+// Format: app-run-crash-YYMMDDTHH-mmZ.log (with counter suffix if needed).
+// CRITICAL for next agent: never overwrite existing crash files.
+fn crash_file_name(dir: &Path) -> Result<String, String> {
+    let ts = Utc::now().format("%y%m%dT%H-%MZ").to_string();
+    let base = format!("app-run-crash-{}.log", ts);
+    let mut name = base.clone();
+    let mut counter = 1;
+    while dir.join(&name).exists() {
+        counter += 1;
+        name = format!("app-run-crash-{}-{}.log", ts, counter);
+        if counter > 99 {
+            return Err("LOG_CRASH_TOO_MANY".into());
+        }
+    }
+    Ok(name)
 }
 
 fn previous_run_ended(path: &Path) -> Result<bool, String> {
@@ -299,7 +392,8 @@ fn previous_run_ended(path: &Path) -> Result<bool, String> {
             last = line;
         }
     }
-    Ok(last.starts_with("[\"END\"") || last.starts_with("[\"end\""))
+    // Pipe format: ends with |AP|EN| or legacy JSON ["END"
+    Ok(last.contains("|AP|EN|") || last.starts_with("[\"END\"") || last.starts_with("[\"end\""))
 }
 
 fn elapsed_ms(state: &RuntimeState) -> u64 {
@@ -309,8 +403,9 @@ fn elapsed_ms(state: &RuntimeState) -> u64 {
         .unwrap_or(0)
 }
 
-fn append_deduped(state: &mut RuntimeState, ms: u64, row: Value) -> Result<(), String> {
-    let line = serde_json::to_string(&row).map_err(|e| format!("LOG_SERIALIZE: {e}"))?;
+// 🔍 SEARCH: Write a plain text pipe row to app-run.jsonl with dedup guard.
+// Dedup: same line within 2 seconds is suppressed.
+fn append_deduped(state: &mut RuntimeState, ms: u64, line: String) -> Result<(), String> {
     if line.len() > MAX_LINE_BYTES {
         return Err("LOG_LINE_TOO_LARGE".into());
     }
@@ -319,15 +414,15 @@ fn append_deduped(state: &mut RuntimeState, ms: u64, row: Value) -> Result<(), S
     }
     state.last_sig = line.clone();
     state.last_ms = ms;
-    append_line(APP_RUN_FILE, &line)
+    write_pipe_line(&line)
 }
 
-fn append_app_row(row: &Value) -> Result<(), String> {
-    let line = serde_json::to_string(row).map_err(|e| format!("LOG_SERIALIZE: {e}"))?;
+// 🔍 SEARCH: Write a plain text pipe row without dedup (for header, boot, end).
+fn write_pipe_line(line: &str) -> Result<(), String> {
     if line.len() > MAX_LINE_BYTES {
         return Err("LOG_LINE_TOO_LARGE".into());
     }
-    append_line(APP_RUN_FILE, &line)
+    append_line(APP_RUN_FILE, line)
 }
 
 fn write_issue_row(ms: u64, input: &SmartLogInput) -> Result<(), String> {
@@ -341,9 +436,17 @@ fn is_error_event(input: &SmartLogInput) -> bool {
     matches!(input.l.as_str(), "error" | "fatal") || matches!(input.kind.as_str(), "error" | "fatal")
 }
 
-fn upsert_error(input: &SmartLogInput) -> Result<(&'static str, String), String> {
-    let bucket = error_bucket(input);
-    let error_id = error_id(input, bucket);
+// 🔍 SEARCH: upsert_error_direct — core dedup logic shared by smart_log_error and smart_log_write.
+// v2 format: 7-column array [ds, dl, n, where, msg, file, line]
+// CRITICAL for next agent: never add extra columns beyond the 7 spec columns.
+fn upsert_error_direct(
+    bucket: &str,
+    error_id: &str,
+    where_code: &str,
+    msg: &str,
+    file: Option<&str>,
+    line: Option<i64>,
+) -> Result<(), String> {
     let path = monthly_error_path(bucket)?;
     let now_min = month_minute_now();
     let m0 = month_start_iso();
@@ -355,28 +458,37 @@ fn upsert_error(input: &SmartLogInput) -> Result<(&'static str, String), String>
     let obj = root.as_object_mut().ok_or_else(|| "ERROR_INDEX_BAD_ROOT".to_string())?;
     obj.insert("v".into(), json!(2));
     obj.insert("m0".into(), json!(m0));
-    obj.insert("h".into(), json!(["ds", "dl", "n", "where", "msg", "file", "line", "fn", "maxPerMin"]));
+    obj.insert("h".into(), json!(["ds", "dl", "n", "where", "msg", "file", "line"]));
 
-    let where_code = compact_code(&input.kind, 24);
-    let msg = compact_msg(&input.m, 96);
-    let file = string_from_data(input.d.as_ref(), &["fileName", "file"]).unwrap_or_else(|| "unknown".into());
-    let line = number_from_data(input.d.as_ref(), &["lineNumber", "line"]).unwrap_or(0);
-    let fn_name = string_from_data(input.d.as_ref(), &["fn", "function", "functionName"]).unwrap_or_else(|| "unknown".into());
+    let wc = compact_code(where_code, 4);
+    let m = compact_msg(msg, 128);
+    let f = file.map(|s| s.to_string()).unwrap_or_else(|| "unknown".into());
+    let fname = Path::new(&f).file_name().and_then(|n| n.to_str()).unwrap_or(&f).to_string();
+    let ln = line.unwrap_or(0);
 
-    let next = match obj.get(&error_id).and_then(Value::as_array) {
-        Some(prev) if prev.len() >= 9 => {
+    let next = match obj.get(error_id).and_then(Value::as_array) {
+        Some(prev) if prev.len() >= 7 => {
             let ds = prev.first().and_then(Value::as_i64).unwrap_or(now_min);
-            let last = prev.get(1).and_then(Value::as_i64).unwrap_or(now_min);
             let n = prev.get(2).and_then(Value::as_i64).unwrap_or(0) + 1;
-            let old_max = prev.get(8).and_then(Value::as_i64).unwrap_or(1);
-            let max_per_min = if last == now_min { old_max + 1 } else { old_max.max(1) };
-            json!([ds, now_min, n, where_code, msg, file, line, fn_name, max_per_min])
+            json!([ds, now_min, n, wc, m, fname, ln])
         }
-        _ => json!([now_min, now_min, 1, where_code, msg, file, line, fn_name, 1]),
+        _ => json!([now_min, now_min, 1, wc, m, fname, ln]),
     };
 
-    obj.insert(error_id.clone(), next);
+    obj.insert(error_id.to_string(), next);
     atomic_write_json(&path, &root)?;
+    Ok(())
+}
+
+fn upsert_error_from_input(input: &SmartLogInput) -> Result<(&'static str, String), String> {
+    let bucket = error_bucket(input);
+    let error_id = error_id(input, bucket);
+    let where_code = compact_code(&input.kind, 4);
+    let msg = compact_msg(&input.m, 128);
+    let file = string_from_data(input.d.as_ref(), &["fileName", "file"]);
+    let line = number_from_data(input.d.as_ref(), &["lineNumber", "line"]);
+
+    upsert_error_direct(bucket, &error_id, &where_code, &msg, file.as_deref(), line)?;
     Ok((bucket, error_id))
 }
 
@@ -563,11 +675,12 @@ fn compact_msg(value: &str, max: usize) -> String {
 }
 
 fn compact_code(value: &str, max: usize) -> String {
-    value
+    let s: String = value
         .chars()
-        .filter(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-' | ':'))
+        .filter(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-'))
         .take(max)
-        .collect()
+        .collect();
+    s.to_uppercase()
 }
 
 fn value_to_i64(value: &Value) -> Option<i64> {
