@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import HomeWelcome from './HomeWelcome.svelte';
 
   export let tabs: string[] = [];
   export let activeTab = '';
@@ -36,7 +37,16 @@
   <div class="tabs tabs-box bg-base-200 rounded-none border-b border-base-300 p-1 flex items-center">
     <div id="p3h1-header-left" class="flex items-center">
       {#each tabs as tab (tab)}
-        <button id="p3h1-tab-{tab.toLowerCase()}" type="button" class="tab {activeTab === tab ? 'tab-active' : ''}" onclick={() => onSelectTab(tab)}>{tab}</button>
+        <button id="p3h1-tab-{tab.toLowerCase()}" type="button" class="tab {activeTab === tab ? 'tab-active' : ''}" onclick={() => onSelectTab(tab)}>
+          {#if tab === 'Home'}
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m23.25 10.882 -9.885 -9.226a2 2 0 0 0 -2.73 0L0.75 10.882"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12.382v9a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5 -1.5v-9"/>
+            </svg>
+          {:else}
+            {tab}
+          {/if}
+        </button>
       {/each}
     </div>
     <div id="p3h1-header-right" class="flex items-center ml-auto">
@@ -54,12 +64,18 @@
       <button id="p3h1-more-action" type="button" class="tab" title="More Actions">⋯</button>
     </div>
   </div>
-  <div class="flex-1 min-h-0 p-4 overflow-auto">
-    <div class="mockup-code bg-base-200 text-base-content border border-base-300">
-      <pre data-prefix="#"><code>{activeRole}</code></pre>
-      <pre data-prefix="1"><code>main-v1-4 layout owner</code></pre>
-      <pre data-prefix="2"><code>p0 p1 p2 p3 p4 / p3h1 p3h2 / p4v1 p4v2</code></pre>
-      <pre data-prefix="3"><code>{activeTab}: ready</code></pre>
-    </div>
+  <div class="flex-1 min-h-0 overflow-auto">
+    {#if activeTab === 'Home'}
+      <HomeWelcome />
+    {:else}
+      <div class="p-4">
+        <div class="mockup-code bg-base-200 text-base-content border border-base-300">
+          <pre data-prefix="#"><code>{activeRole}</code></pre>
+          <pre data-prefix="1"><code>main-v1-4 layout owner</code></pre>
+          <pre data-prefix="2"><code>p0 p1 p2 p3 p4 / p3h1 p3h2 / p4v1 p4v2</code></pre>
+          <pre data-prefix="3"><code>{activeTab}: ready</code></pre>
+        </div>
+      </div>
+    {/if}
   </div>
 </section>

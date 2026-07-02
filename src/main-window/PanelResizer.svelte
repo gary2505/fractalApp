@@ -13,11 +13,13 @@ PURPOSE: Drag handle between two panels. Updates panel width via callback.
 
 	let dragging = $state(false);
 	let resizerEl: HTMLDivElement | null = $state(null);
+	let lastPos = $state(0);
 
 	function handlePointerDown(e: PointerEvent) {
 		if (e.button !== 0) return;
 		e.preventDefault();
 		dragging = true;
+		lastPos = direction === 'vertical' ? e.clientX : e.clientY;
 		resizerEl?.setPointerCapture(e.pointerId);
 		document.body.style.cursor = direction === 'vertical' ? 'col-resize' : 'row-resize';
 		document.body.style.userSelect = 'none';
@@ -25,13 +27,18 @@ PURPOSE: Drag handle between two panels. Updates panel width via callback.
 
 	function handlePointerMove(e: PointerEvent) {
 		if (!dragging) return;
-		const delta = direction === 'vertical' ? e.movementX : e.movementY;
-		if (delta !== 0) onResize(delta);
+		const currentPos = direction === 'vertical' ? e.clientX : e.clientY;
+		const delta = currentPos - lastPos;
+		if (delta !== 0) {
+			lastPos = currentPos;
+			onResize(delta);
+		}
 	}
 
 	function handlePointerUp(e: PointerEvent) {
 		if (!dragging) return;
 		dragging = false;
+		lastPos = 0;
 		resizerEl?.releasePointerCapture(e.pointerId);
 		document.body.style.cursor = '';
 		document.body.style.userSelect = '';

@@ -3,24 +3,39 @@
   import P3H2 from '../p3/p3h2/p3h2-v1-0.svelte';
   import PanelResizer from '../main-window/PanelResizer.svelte';
 
-  export let activeRole = 'AI Editor';
-  export let p3h2Hidden = false;
-  export let p3h2Pinned = false;
-  export let p3h2Maximized = false;
-  export let p3h2Hover = false;
-  export let p3h2Height = 160;
-  export let onCloseP3H2: () => void = () => {};
-  export let onTogglePinP3H2: () => void = () => {};
-  export let onToggleMaximizeP3H2: () => void = () => {};
-  export let onResizeP3H2: (delta: number) => void = () => {};
-  export let onP3H2MouseEnter: () => void = () => {};
-  export let onP3H2MouseLeave: () => void = () => {};
+  let {
+    activeRole = 'AI Editor',
+    p3h2Hidden = false,
+    p3h2Pinned = false,
+    p3h2Maximized = false,
+    p3h2Hover = false,
+    p3h2Height = 160,
+    onCloseP3H2 = () => {},
+    onTogglePinP3H2 = () => {},
+    onToggleMaximizeP3H2 = () => {},
+    onResizeP3H2 = (_delta: number) => {},
+    onP3H2MouseEnter = () => {},
+    onP3H2MouseLeave = () => {}
+  }: {
+    activeRole?: string;
+    p3h2Hidden?: boolean;
+    p3h2Pinned?: boolean;
+    p3h2Maximized?: boolean;
+    p3h2Hover?: boolean;
+    p3h2Height?: number;
+    onCloseP3H2?: () => void;
+    onTogglePinP3H2?: () => void;
+    onToggleMaximizeP3H2?: () => void;
+    onResizeP3H2?: (_delta: number) => void;
+    onP3H2MouseEnter?: (e: MouseEvent) => void;
+    onP3H2MouseLeave?: (e: MouseEvent) => void;
+  } = $props();
 
-  const p3h1Tabs = ['Editor', 'Preview', 'Diff', 'Plan'];
+  const p3h1Tabs = ['Home', 'Editor', 'Preview', 'Diff', 'Plan'];
   const p3h2Tabs = ['Terminal', 'Problems', 'Logs', 'Proof'];
 
-  let activeP3H1Tab = p3h1Tabs[0]!;
-  let activeP3H2Tab = p3h2Tabs[0]!;
+  let activeP3H1Tab = $state(p3h1Tabs[0]!);
+  let activeP3H2Tab = $state(p3h2Tabs[0]!);
 </script>
 
 <main id="p3" class="flex-1 min-w-0 bg-base-100 text-base-content overflow-hidden" class:has-maximized={p3h2Maximized} aria-label="P3 main orchestra panel">
